@@ -1,5 +1,4 @@
 import pytest
-
 from http import HTTPStatus
 from django.urls import reverse
 
@@ -17,7 +16,6 @@ def test_pages_available_for_anonymous(client, news):
     for name, args in urls:
         url = reverse(name, args=args)
         response = client.get(url)
-
         assert response.status_code == HTTPStatus.OK
 
 
@@ -37,7 +35,6 @@ def test_comment_edit_delete_available_only_for_author(
     for name in ('news:edit', 'news:delete'):
         url = reverse(name, args=(comment.id,))
         response = client.get(url)
-
         assert response.status_code == status
 
 
@@ -50,6 +47,5 @@ def test_redirect_for_anonymous_user(client, comment):
         redirect_url = f'{login_url}?next={url}'
 
         response = client.get(url)
-
         assert response.status_code == HTTPStatus.FOUND
         assert response.url == redirect_url

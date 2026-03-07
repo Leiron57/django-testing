@@ -48,7 +48,9 @@ class TestNoteLogic(TestCase):
             author=self.author
         )
         url = reverse('notes:add')
-        data = {'title': 'Другая заметка', 'text': 'Текст', 'slug': 'unique-slug'}
+        data = {'title': 'Другая заметка',
+                'text': 'Текст',
+                'slug': 'unique-slug'}
         response = self.client_author.post(url, data=data)
         self.assertFormError(response, 'form', 'slug')
 
@@ -56,6 +58,7 @@ class TestNoteLogic(TestCase):
         url = reverse('notes:add')
         data = {'title': 'Тестовая заметка', 'text': 'Текст'}
         response = self.client_author.post(url, data=data)
+        self.assertEqual(response.status_code, 302)
         note = Note.objects.get(title='Тестовая заметка')
         expected_slug = 'Тестовая заметка'
         self.assertEqual(note.slug, expected_slug)
@@ -84,7 +87,10 @@ class TestNoteLogic(TestCase):
             author=self.other_user
         )
         url_edit = reverse('notes:edit', args=(note.slug,))
-        response = self.client_author.post(url_edit, data={'title': 'Хак', 'text': 'Хак'})
+        response = self.client_author.post(url_edit, 
+                                           data={'title': 'Хак',
+                                                'text': 'Хак'}
+                                        )
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
         note.refresh_from_db()
         self.assertEqual(note.title, 'Чужая заметка')
@@ -92,3 +98,4 @@ class TestNoteLogic(TestCase):
         response = self.client_author.post(url_delete)
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
         self.assertTrue(Note.objects.filter(slug=note.slug).exists())
+
