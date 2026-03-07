@@ -23,12 +23,10 @@ class TestRoutes(TestCase):
 
         cls.anonymous_client = Client()
 
-
     def test_home_page_available_for_anonymous(self):
         url = reverse('news:home')
         response = self.anonymous_client.get(url)
         self.assertEqual(response.status_code, HTTPStatus.OK)
-
 
     def test_pages_available_for_authenticated_user(self):
         urls = (
@@ -40,7 +38,6 @@ class TestRoutes(TestCase):
             with self.subTest(url=url):
                 response = self.author_client.get(url)
                 self.assertEqual(response.status_code, HTTPStatus.OK)
-
 
     def test_note_pages_only_for_author(self):
         note_id = self.note.id
@@ -59,7 +56,6 @@ class TestRoutes(TestCase):
                 response = self.other_client.get(url)
                 self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
 
-
     def test_redirect_for_anonymous_user(self):
         note_id = self.note.id
         login_url = reverse('users:login')
@@ -76,7 +72,6 @@ class TestRoutes(TestCase):
                 response = self.anonymous_client.get(url)
                 self.assertEqual(response.status_code, HTTPStatus.FOUND)
                 self.assertRedirects(response, f'{login_url}?next={url}')
-
 
     def test_auth_pages_available_for_all(self):
         urls = (

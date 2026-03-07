@@ -14,15 +14,22 @@ class TestNotesContent(TestCase):
         cls.user1 = User.objects.create(username='Пользователь1')
         cls.user2 = User.objects.create(username='Пользователь2')
 
-        cls.note1 = Note.objects.create(title='Заметка1', text='Текст1', author=cls.user1)
-        cls.note2 = Note.objects.create(title='Заметка2', text='Текст2', author=cls.user2)
+        cls.note1 = Note.objects.create(
+            title='Заметка1',
+            text='Текст1',
+            author=cls.user1
+        )
+        cls.note2 = Note.objects.create(
+            title='Заметка2',
+            text='Текст2',
+            author=cls.user2
+        )
 
         cls.client_user1 = Client()
         cls.client_user1.force_login(cls.user1)
 
         cls.client_user2 = Client()
         cls.client_user2.force_login(cls.user2)
-
 
     def test_note_in_list_context(self):
         url = reverse('notes:list')
@@ -31,7 +38,6 @@ class TestNotesContent(TestCase):
         object_list = response.context['object_list']
         self.assertIn(self.note1, object_list)
         self.assertNotIn(self.note2, object_list)
-
 
     def test_user_sees_only_own_notes(self):
         url = reverse('notes:list')
@@ -45,7 +51,6 @@ class TestNotesContent(TestCase):
 
         self.assertIn(self.note2, notes_user2)
         self.assertNotIn(self.note1, notes_user2)
-
 
     def test_note_form_in_create_and_edit(self):
         url_add = reverse('notes:add')

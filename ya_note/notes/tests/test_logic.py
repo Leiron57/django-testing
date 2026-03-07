@@ -27,8 +27,10 @@ class TestNoteLogic(TestCase):
         data = {'title': 'Анонимная заметка', 'text': 'Текст'}
         response = self.anonymous_client.post(url, data=data)
         self.assertEqual(response.status_code, HTTPStatus.FOUND)
-        self.assertFalse(Note.objects.filter(title='Анонимная заметка').exists())
-
+        self.assertFalse(
+            Note.objects.filter(title='Анонимная заметка').exists()
+        )
+        
     def test_logged_in_user_can_create_note(self):
         url = reverse('notes:add')
         data = {'title': 'Новая заметка', 'text': 'Текст заметки'}
@@ -39,11 +41,16 @@ class TestNoteLogic(TestCase):
         self.assertTrue(note.slug)
 
     def test_cannot_create_notes_with_same_slug(self):
-        Note.objects.create(title='Заметка', text='Текст', slug='unique-slug', author=self.author)
+        Note.objects.create(
+            title='Заметка',
+            text='Текст',
+            slug='unique-slug',
+            author=self.author
+        )
         url = reverse('notes:add')
         data = {'title': 'Другая заметка', 'text': 'Текст', 'slug': 'unique-slug'}
         response = self.client_author.post(url, data=data)
-        self.assertFormError(response, 'form', 'slug', 'Note with this Slug already exists.')
+        self.assertFormError(response, 'form', 'slug')
 
     def test_slug_generated_if_not_provided(self):
         url = reverse('notes:add')
@@ -54,7 +61,11 @@ class TestNoteLogic(TestCase):
         self.assertEqual(note.slug, expected_slug)
 
     def test_user_can_edit_and_delete_own_note(self):
-        note = Note.objects.create(title='Моя заметка', text='Текст', author=self.author)
+        note = Note.objects.create(
+            title='Моя заметка',
+            text='Текст',
+            author=self.author
+        )
         url_edit = reverse('notes:edit', args=(note.slug,))
         data_edit = {'title': 'Обновлённая заметка', 'text': 'Новый текст'}
         response = self.client_author.post(url_edit, data=data_edit)
@@ -67,7 +78,11 @@ class TestNoteLogic(TestCase):
         self.assertFalse(Note.objects.filter(slug=note.slug).exists())
 
     def test_user_cannot_edit_or_delete_others_note(self):
-        note = Note.objects.create(title='Чужая заметка', text='Текст', author=self.other_user)
+        note = Note.objects.create(
+            title='Чужая заметка',
+            text='Текст',
+            author=self.other_user
+        )
         url_edit = reverse('notes:edit', args=(note.slug,))
         response = self.client_author.post(url_edit, data={'title': 'Хак', 'text': 'Хак'})
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)

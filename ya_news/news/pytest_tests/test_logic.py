@@ -44,7 +44,11 @@ def test_user_cant_use_bad_words(author_client, news):
 
 @pytest.mark.django_db
 def test_author_can_edit_comment(author_client, news, author):
-    comment = Comment.objects.create(news=news, author=author, text='Текст комментария')
+    comment = Comment.objects.create(
+        news=news,
+        author=author,
+        text='Текст комментария'
+    )
     edit_url = reverse('news:edit', args=(comment.id,))
     url_to_comments = reverse('news:detail', args=(news.id,)) + '#comments'
 
@@ -60,7 +64,11 @@ def test_author_can_edit_comment(author_client, news, author):
 
 @pytest.mark.django_db
 def test_user_cant_edit_comment_of_another_user(reader_client, news, author):
-    comment = Comment.objects.create(news=news, author=author, text='Текст комментария')
+    comment = Comment.objects.create(
+        news=news,
+        author=author,
+        text='Текст комментария'
+    )
     edit_url = reverse('news:edit', args=(comment.id,))
     data = {'text': 'Попытка изменить чужой комментарий'}
 
@@ -73,7 +81,11 @@ def test_user_cant_edit_comment_of_another_user(reader_client, news, author):
 
 @pytest.mark.django_db
 def test_author_can_delete_comment(author_client, news, author):
-    comment = Comment.objects.create(news=news, author=author, text='Текст комментария')
+    comment = Comment.objects.create(
+        news=news,
+        author=author,
+        text='Текст комментария'
+    )
     delete_url = reverse('news:delete', args=(comment.id,))
     url_to_comments = reverse('news:detail', args=(news.id,)) + '#comments'
 
@@ -86,7 +98,11 @@ def test_author_can_delete_comment(author_client, news, author):
 
 @pytest.mark.django_db
 def test_user_cant_delete_comment_of_another_user(reader_client, news, author):
-    comment = Comment.objects.create(news=news, author=author, text='Текст комментария')
+    comment = Comment.objects.create(
+        news=news,
+        author=author,
+        text='Текст комментария'
+    )
     delete_url = reverse('news:delete', args=(comment.id,))
 
     response = reader_client.delete(delete_url)
