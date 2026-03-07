@@ -1,0 +1,95 @@
+import pytest
+from http import HTTPStatus
+from django.urls import reverse
+
+from news.forms import BAD_WORDS, WARNING
+from news.models import Comment
+
+
+@pytest.mark.django_db
+def test_anonymous_user_cant_create_comment(client, news):
+    url = reverse('news:detail', args=(news.id,))
+    data = {'text': 'Текст комментария'}
+
+    client.post(url, data=data)
+    assert Comment.objects.count() == 0
+
+
+@pytest.mark.django_db
+def test_user_can_create_comment(author_client, news, author):
+    url = reverse('news:detail', args=(news.id,))
+    data = {'text': 'Текст комментария'}
+
+    response = author_client.post(url, data=data)
+    assert response.status_code == HTTPStatus.FOUND
+    assert response.url == f'{url}#comments'
+
+    comment = Comment.objects.get()
+    assert comment.text == data['text']
+    assert comment.news == news
+    assert comment.author == author
+
+
+@pytest.mark.django_db
+def test_user_cant_use_bad_words(author_client, news):
+    url = reverse('news:detail', args=(news.id,))
+    data = {'text': f'Текст с запрещённым словом: {BAD_WORDS[0]}'}
+
+    response = author_client.post(url, data=data)
+    form = response.context['form']
+
+    assert form.errors['text'] == [WARNING]
+    assert Comment.objects.count() == 0
+
+
+@pytest.mark.django_db
+def test_author_can_edit_comment(author_client, news, author):
+    comment = Comment.objects.create(news=news, author=author, text='Текст комментария')
+    edit_url = reverse('news:edit', args=(comment.id,))
+    url_to_comments = reverse('news:detail', args=(news.id,)) + '#comments'
+
+    data = {'text': 'Обновлённый комментарий'}
+    response = author_client.post(edit_url, data=data)
+
+    assert response.status_code == HTTPStatus.FOUND
+    assert response.url == url_to_comments
+
+    comment.refresh_from_db()
+    assert comment.text == data['text']
+
+
+@pytest.mark.django_db
+def test_user_cant_edit_comment_of_another_user(reader_client, news, author):
+    comment = Comment.objects.create(news=news, author=author, text='Текст комментария')
+    edit_url = reverse('news:edit', args=(comment.id,))
+    data = {'text': 'Попытка изменить чужой комментарий'}
+
+    response = reader_client.post(edit_url, data=data)
+    assert response.status_code == HTTPStatus.NOT_FOUND
+
+    comment.refresh_from_db()
+    assert comment.text == 'Текст комментария'
+
+
+@pytest.mark.django_db
+def test_author_can_delete_comment(author_client, news, author):
+    comment = Comment.objects.create(news=news, author=author, text='Текст комментария')
+    delete_url = reverse('news:delete', args=(comment.id,))
+    url_to_comments = reverse('news:detail', args=(news.id,)) + '#comments'
+
+    response = author_client.delete(delete_url)
+    assert response.status_code == HTTPStatus.FOUND
+    assert response.url == url_to_comments
+
+    assert Comment.objects.count() == 0
+
+
+@pytest.mark.django_db
+def test_user_cant_delete_comment_of_another_user(reader_client, news, author):
+    comment = Comment.objects.create(news=news, author=author, text='Текст комментария')
+    delete_url = reverse('news:delete', args=(comment.id,))
+
+    response = reader_client.delete(delete_url)
+    assert response.status_code == HTTPStatus.NOT_FOUND
+
+    assert Comment.objects.count() == 1
