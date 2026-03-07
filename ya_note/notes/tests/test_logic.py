@@ -30,7 +30,7 @@ class TestNoteLogic(TestCase):
         self.assertFalse(
             Note.objects.filter(title='Анонимная заметка').exists()
         )
-        
+
     def test_logged_in_user_can_create_note(self):
         url = reverse('notes:add')
         data = {'title': 'Новая заметка', 'text': 'Текст заметки'}
@@ -87,10 +87,13 @@ class TestNoteLogic(TestCase):
             author=self.other_user
         )
         url_edit = reverse('notes:edit', args=(note.slug,))
-        response = self.client_author.post(url_edit, 
-                                           data={'title': 'Хак',
-                                                'text': 'Хак'}
-                                        )
+        response = self.client_author.post(
+            url_edit,
+            data={
+                'title': 'Хак',
+                'text': 'Хак',
+            }
+        )
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
         note.refresh_from_db()
         self.assertEqual(note.title, 'Чужая заметка')
@@ -98,4 +101,3 @@ class TestNoteLogic(TestCase):
         response = self.client_author.post(url_delete)
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
         self.assertTrue(Note.objects.filter(slug=note.slug).exists())
-
