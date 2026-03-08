@@ -13,7 +13,6 @@ from django.urls import reverse
         ("users:signup", None, HTTPStatus.OK),
     ]
 )
-
 def test_pages_get_available_for_anonymous(
     client,
     news,
