@@ -4,19 +4,23 @@ from django.urls import reverse
 
 
 @pytest.mark.django_db
-def test_pages_available_for_anonymous(client, news):
-    urls = (
-        ('news:home', None),
-        ('news:detail', (news.id,)),
-        ('users:login', None),
-        ('users:signup', None),
-    )
+@pytest.mark.parametrize(
+    "name,args,expected_status",
+    [
+        ("news:home", None, HTTPStatus.OK),
+        ("news:detail", lambda news: (news.id,), HTTPStatus.OK),
+        ("users:login", None, HTTPStatus.OK),
+        ("users:signup", None, HTTPStatus.OK),
+    ]
+)
+def test_pages_get_available_for_anonymous(client, news, name, args, expected_status):
+    resolved_args = args(news) if callable(args) else args
+    url = reverse(name, args=resolved_args)
+    response = client.get(url)
+    assert response.status_code == expected_status
 
-    for name, args in urls:
-        url = reverse(name, args=args)
-        response = client.get(url)
-        assert response.status_code == HTTPStatus.OK
-
+@pytest.mark.django_db
+def test_logout_redirect_for_anonymous(client):
     logout_url = reverse('users:logout')
     response = client.post(logout_url)
     assert response.status_code == HTTPStatus.FOUND
