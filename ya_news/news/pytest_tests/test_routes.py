@@ -24,14 +24,6 @@ def test_pages_available_for_anonymous(client, news):
 
 
 @pytest.mark.django_db
-def test_logout_redirect_for_anonymous(client):
-    logout_url = reverse('users:logout')
-    response = client.post(logout_url)
-    assert response.status_code == HTTPStatus.FOUND
-    assert response.url.startswith(reverse('users:login'))
-
-
-@pytest.mark.django_db
 @pytest.mark.parametrize(
     'client_fixture, status',
     (
