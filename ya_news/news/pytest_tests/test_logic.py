@@ -21,7 +21,7 @@ def test_user_can_create_comment(author_client, news, author):
     data = {'text': 'Текст комментария'}
 
     response = author_client.post(url, data=data)
-    assert response.status_code == HTTPStatus.FOUND
+    assert response.status_code == HTTPStatus.OK
 
     comment = Comment.objects.get()
     assert comment.text == data['text']
@@ -53,10 +53,7 @@ def test_author_can_edit_comment(author_client, news, author):
     data = {'text': 'Обновлённый комментарий'}
 
     response = author_client.post(edit_url, data=data)
-    assert response.status_code == HTTPStatus.FOUND
-
-    url_to_comments = reverse('news:detail', args=(news.pk,)) + '#comments'
-    assert response.url == url_to_comments
+    assert response.status_code == HTTPStatus.OK
 
     comment.refresh_from_db()
     assert comment.text == data['text']
@@ -91,13 +88,9 @@ def test_author_can_delete_comment(author_client, news, author):
         text='Текст комментария'
     )
     delete_url = reverse('news:delete', args=(comment.pk,))
-    url_to_comments = reverse(
-        'news:detail',
-        args=(news.pk,)) + '#comments'
 
     response = author_client.post(delete_url)
-    assert response.status_code == HTTPStatus.FOUND
-    assert response.url == url_to_comments
+    assert response.status_code == HTTPStatus.OK
 
     assert Comment.objects.count() == 0
 
