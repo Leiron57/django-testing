@@ -36,7 +36,6 @@ def test_user_cant_use_bad_words(author_client, news):
 
     response = author_client.post(url, data=data)
     assert response.status_code == HTTPStatus.OK
-    assert 'form' in response.context
     form = response.context['form']
     assert form.errors['text'] == [WARNING]
     assert Comment.objects.count() == 0
@@ -54,6 +53,9 @@ def test_author_can_edit_comment(author_client, news, author):
 
     response = author_client.post(edit_url, data=data)
     assert response.status_code == HTTPStatus.OK
+
+
+
 
     comment.refresh_from_db()
     assert comment.text == data['text']
@@ -88,6 +90,9 @@ def test_author_can_delete_comment(author_client, news, author):
         text='Текст комментария'
     )
     delete_url = reverse('news:delete', args=(comment.pk,))
+    url_to_comments = reverse(
+        'news:detail',
+        args=(news.pk,)) + '#comments'
 
     response = author_client.post(delete_url)
     assert response.status_code == HTTPStatus.OK
