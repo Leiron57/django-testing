@@ -26,6 +26,7 @@ def test_pages_get_available_for_anonymous(
     response = client.get(url)
     assert response.status_code == expected_status
 
+
 @pytest.mark.django_db
 def test_logout_redirect_for_anonymous(client):
     logout_url = reverse('users:logout')
