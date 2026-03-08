@@ -13,8 +13,12 @@ class TestRoutes(TestCase):
     def setUpTestData(cls):
         cls.author = User.objects.create(username='Автор')
         cls.other_user = User.objects.create(username='Чужой')
-        cls.note = Note.objects.create(title='Заметка', text='Текст', author=cls.author)
-
+        cls.note = Note.objects.create(
+            title='Заметка',
+            text='Текст',
+            author=cls.author
+        )
+        
         cls.author_client = Client()
         cls.author_client.force_login(cls.author)
 

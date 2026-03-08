@@ -63,7 +63,10 @@ def test_author_can_edit_comment(author_client, news, author):
 
 
 @pytest.mark.django_db
-def test_user_cant_edit_comment_of_another_user(not_author_client, news, author):
+def test_user_cant_edit_comment_of_another_user(
+    not_author_client,
+    news, author
+    ):
     comment = Comment.objects.create(
         news=news,
         author=author,
@@ -99,7 +102,10 @@ def test_author_can_delete_comment(author_client, news, author):
 
 
 @pytest.mark.django_db
-def test_user_cant_delete_comment_of_another_user(not_author_client, news, author):
+def test_user_cant_delete_comment_of_another_user(
+    not_author_client,
+    news, author
+    ):
     comment = Comment.objects.create(
         news=news,
         author=author,
