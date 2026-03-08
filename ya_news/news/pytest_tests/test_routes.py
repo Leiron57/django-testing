@@ -21,6 +21,9 @@ def test_pages_available_for_anonymous(client, news):
     response = client.post(logout_url)
     assert response.status_code == HTTPStatus.FOUND
 
+    expected_redirect = reverse('users:login')
+    assert response.url.startswith(expected_redirect)
+
 
 @pytest.mark.django_db
 @pytest.mark.parametrize(
