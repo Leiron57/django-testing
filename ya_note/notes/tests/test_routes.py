@@ -18,7 +18,7 @@ class TestRoutes(TestCase):
             text='Текст',
             author=cls.author
         )
-        
+
         cls.author_client = Client()
         cls.author_client.force_login(cls.author)
 
