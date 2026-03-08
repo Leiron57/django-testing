@@ -118,4 +118,3 @@ def test_user_cant_delete_comment_of_another_user(
     response = not_author_client.post(delete_url)
     assert response.status_code == HTTPStatus.NOT_FOUND
     assert Comment.objects.count() == 1
-    
