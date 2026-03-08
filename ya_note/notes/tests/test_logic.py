@@ -53,7 +53,7 @@ class TestNoteLogic(TestCase):
         data = {'title': 'Другая заметка',
                 'text': 'Текст',
                 'slug': 'unique-slug'}
-        response = self.client_author.post(url, data=data)
+        response = self.client_author.post(url, data=data, follow=True)
         self.assertFormError(response, 'form', 'slug')
 
     def test_slug_generated_if_not_provided(self):
