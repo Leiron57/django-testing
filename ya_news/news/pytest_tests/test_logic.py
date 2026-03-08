@@ -22,7 +22,9 @@ def test_user_can_create_comment(author_client, news, author):
 
     response = author_client.post(url, data=data)
     assert response.status_code == HTTPStatus.FOUND
-    assert response.url == f'{url}#comments'
+
+    url_to_comments = reverse('news:detail', args=(news.pk,)) + '#comments'
+    assert response.url == url_to_comments
 
     comment = Comment.objects.get()
     assert comment.text == data['text']
@@ -32,7 +34,7 @@ def test_user_can_create_comment(author_client, news, author):
 
 @pytest.mark.django_db
 def test_user_cant_use_bad_words(author_client, news):
-    url = reverse('news:detail', args=(news.pk,))
+    url = reverse('news:comment', args=(news.pk,))
     data = {'text': f'Текст с запрещённым словом: {BAD_WORDS[0]}'}
 
     response = author_client.post(url, data=data)
@@ -90,7 +92,7 @@ def test_author_can_delete_comment(author_client, news, author):
         author=author,
         text='Текст комментария'
     )
-    delete_url = reverse('news:delete', args=(comment.id,))
+    delete_url = reverse('news:delete', args=(comment.pk,))
     url_to_comments = reverse(
         'news:detail',
         args=(news.pk,)) + '#comments'
