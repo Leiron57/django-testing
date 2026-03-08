@@ -8,7 +8,7 @@ from django.urls import reverse
     ('news:home', 'news:detail', 'users:login', 'users:signup', 'users:logout')
 )
 def test_pages_availability_for_anonymous_user(client, name, news):
-    args = (news.id,) if name == 'news:detail' else None
+    args = (news.pk,) if name == 'news:detail' else None
     url = reverse(name, args=args)
 
     if name == 'users:logout':
@@ -33,7 +33,7 @@ def test_comment_edit_delete_available_only_for_author(
     client = request.getfixturevalue(client_fixture)
 
     for name in ('news:edit', 'news:delete'):
-        url = reverse(name, args=(comment.id,))
+        url = reverse(name, args=(comment.pk,))
         response = client.get(url)
         assert response.status_code == status
 
@@ -43,7 +43,7 @@ def test_redirect_for_anonymous_user(client, comment):
     login_url = reverse('users:login')
 
     for name in ('news:edit', 'news:delete'):
-        url = reverse(name, args=(comment.id,))
+        url = reverse(name, args=(comment.pk,))
         redirect_url = f'{login_url}?next={url}'
 
         response = client.get(url)

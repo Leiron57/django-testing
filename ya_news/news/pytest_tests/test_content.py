@@ -25,7 +25,6 @@ def test_news_count(client):
     response = client.get(url)
 
     object_list = response.context['object_list']
-
     assert len(object_list) == settings.NEWS_COUNT_ON_HOME_PAGE
 
 
@@ -46,7 +45,6 @@ def test_news_order(client):
     response = client.get(url)
 
     object_list = response.context['object_list']
-
     all_dates = [news.date for news in object_list]
     sorted_dates = sorted(all_dates, reverse=True)
 
@@ -80,7 +78,7 @@ def test_comments_order(client, news, author):
 
 @pytest.mark.django_db
 def test_anonymous_client_has_no_form(client, news):
-    url = reverse('news:detail', args=(news.id,))
+    url = reverse('news:detail', args=(news.pk,))
     response = client.get(url)
 
     assert 'form' not in response.context
@@ -88,7 +86,7 @@ def test_anonymous_client_has_no_form(client, news):
 
 @pytest.mark.django_db
 def test_authorized_client_has_form(author_client, news):
-    url = reverse('news:detail', args=(news.id,))
+    url = reverse('news:detail', args=(news.pk,))
     response = author_client.get(url)
 
     assert 'form' in response.context

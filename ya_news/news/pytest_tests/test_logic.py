@@ -8,7 +8,7 @@ from news.models import Comment
 
 @pytest.mark.django_db
 def test_anonymous_user_cant_create_comment(client, news):
-    url = reverse('news:detail', args=(news.id,))
+    url = reverse('news:detail', args=(news.pk,))
     data = {'text': 'Текст комментария'}
 
     client.post(url, data=data)
@@ -17,7 +17,7 @@ def test_anonymous_user_cant_create_comment(client, news):
 
 @pytest.mark.django_db
 def test_user_can_create_comment(author_client, news, author):
-    url = reverse('news:detail', args=(news.id,))
+    url = reverse('news:detail', args=(news.pk,))
     data = {'text': 'Текст комментария'}
 
     response = author_client.post(url, data=data)
@@ -32,7 +32,7 @@ def test_user_can_create_comment(author_client, news, author):
 
 @pytest.mark.django_db
 def test_user_cant_use_bad_words(author_client, news):
-    url = reverse('news:detail', args=(news.id,))
+    url = reverse('news:detail', args=(news.pk,))
     data = {'text': f'Текст с запрещённым словом: {BAD_WORDS[0]}'}
 
     response = author_client.post(url, data=data)
@@ -49,8 +49,8 @@ def test_author_can_edit_comment(author_client, news, author):
         author=author,
         text='Текст комментария'
     )
-    edit_url = reverse('news:edit', args=(comment.id,))
-    url_to_comments = reverse('news:detail', args=(news.id,)) + '#comments'
+    edit_url = reverse('news:edit', args=(comment.pk,))
+    url_to_comments = reverse('news:detail', args=(news.pk,)) + '#comments'
 
     data = {'text': 'Обновлённый комментарий'}
     response = author_client.post(edit_url, data=data)
@@ -73,7 +73,7 @@ def test_user_cant_edit_comment_of_another_user(
         author=author,
         text='Текст комментария'
     )
-    edit_url = reverse('news:edit', args=(comment.id,))
+    edit_url = reverse('news:edit', args=(comment.pk,))
     data = {'text': 'Попытка изменить чужой комментарий'}
 
     response = not_author_client.post(edit_url, data=data)
@@ -93,7 +93,7 @@ def test_author_can_delete_comment(author_client, news, author):
     delete_url = reverse('news:delete', args=(comment.id,))
     url_to_comments = reverse(
         'news:detail',
-        args=(news.id,)) + '#comments'
+        args=(news.pk,)) + '#comments'
 
     response = author_client.post(delete_url)
     assert response.status_code == HTTPStatus.FOUND
@@ -113,9 +113,9 @@ def test_user_cant_delete_comment_of_another_user(
         author=author,
         text='Текст комментария'
     )
-    delete_url = reverse('news:delete', args=(comment.id,))
+    delete_url = reverse('news:delete', args=(comment.pk,))
 
     response = not_author_client.post(delete_url)
     assert response.status_code == HTTPStatus.NOT_FOUND
-
     assert Comment.objects.count() == 1
+    
