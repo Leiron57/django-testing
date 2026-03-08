@@ -8,7 +8,7 @@ from news.models import Comment
 
 @pytest.mark.django_db
 def test_anonymous_user_cant_create_comment(client, news):
-    url = reverse('news:detail', args=(news.pk,))
+    url = reverse('news:comment', args=(news.pk,))
     data = {'text': 'Текст комментария'}
 
     client.post(url, data=data)
