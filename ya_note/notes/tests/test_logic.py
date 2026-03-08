@@ -61,6 +61,7 @@ class TestNoteLogic(TestCase):
         data = {'title': 'Тестовая заметка', 'text': 'Текст'}
         response = self.client_author.post(url, data=data)
         self.assertEqual(response.status_code, HTTPStatus.FOUND)
+
         note = Note.objects.get(title='Тестовая заметка')
         expected_slug = slugify('Тестовая заметка')
         self.assertEqual(note.slug, expected_slug)

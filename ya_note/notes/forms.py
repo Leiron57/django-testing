@@ -13,7 +13,7 @@ class NoteForm(forms.ModelForm):
 
     class Meta:
         model = Note
-        fields = ('title', 'text', 'slug')
+        fields = ('title', 'text')
 
     def clean_slug(self):
         """Обрабатывает случай, если slug не уникален."""
