@@ -63,7 +63,7 @@ def test_author_can_edit_comment(author_client, news, author):
 
 
 @pytest.mark.django_db
-def test_user_cant_edit_comment_of_another_user(reader_client, news, author):
+def test_user_cant_edit_comment_of_another_user(not_author_client, news, author):
     comment = Comment.objects.create(
         news=news,
         author=author,
@@ -72,7 +72,7 @@ def test_user_cant_edit_comment_of_another_user(reader_client, news, author):
     edit_url = reverse('news:edit', args=(comment.id,))
     data = {'text': 'Попытка изменить чужой комментарий'}
 
-    response = reader_client.post(edit_url, data=data)
+    response = not_author_client.post(edit_url, data=data)
     assert response.status_code == HTTPStatus.NOT_FOUND
 
     comment.refresh_from_db()
@@ -91,7 +91,7 @@ def test_author_can_delete_comment(author_client, news, author):
         'news:detail',
         args=(news.id,)) + '#comments'
 
-    response = author_client.delete(delete_url)
+    response = author_client.post(delete_url)
     assert response.status_code == HTTPStatus.FOUND
     assert response.url == url_to_comments
 
@@ -99,7 +99,7 @@ def test_author_can_delete_comment(author_client, news, author):
 
 
 @pytest.mark.django_db
-def test_user_cant_delete_comment_of_another_user(reader_client, news, author):
+def test_user_cant_delete_comment_of_another_user(not_author_client, news, author):
     comment = Comment.objects.create(
         news=news,
         author=author,
@@ -107,7 +107,7 @@ def test_user_cant_delete_comment_of_another_user(reader_client, news, author):
     )
     delete_url = reverse('news:delete', args=(comment.id,))
 
-    response = reader_client.delete(delete_url)
+    response = not_author_client.post(delete_url)
     assert response.status_code == HTTPStatus.NOT_FOUND
 
     assert Comment.objects.count() == 1

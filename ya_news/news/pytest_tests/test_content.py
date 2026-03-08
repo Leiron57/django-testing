@@ -1,5 +1,4 @@
 import pytest
-
 from datetime import timedelta
 from django.conf import settings
 from django.urls import reverse
@@ -27,7 +26,7 @@ def test_news_count(client):
 
     object_list = response.context['object_list']
 
-    assert object_list.count() == settings.NEWS_COUNT_ON_HOME_PAGE
+    assert len(object_list) == settings.NEWS_COUNT_ON_HOME_PAGE
 
 
 @pytest.mark.django_db

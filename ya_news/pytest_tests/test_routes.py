@@ -1,5 +1,4 @@
 import pytest
-
 from django.contrib.auth import get_user_model
 from news.models import News, Comment
 
@@ -7,25 +6,27 @@ User = get_user_model()
 
 
 @pytest.fixture
-def author():
-    return User.objects.create(username='Автор')
+def author(db):
+    return User.objects.create_user(username='Автор', password='password')
 
 
 @pytest.fixture
-def not_author():
-    return User.objects.create(username='Читатель')
+def not_author(db):
+    return User.objects.create_user(username='Читатель', password='password')
 
 
 @pytest.fixture
-def news():
+def news(db, author):
+    """Создаём объект новости"""
     return News.objects.create(
         title='Заголовок',
-        text='Текст'
+        text='Текст',
+        author=author
     )
 
 
 @pytest.fixture
-def comment(author, news):
+def comment(db, author, news):
     return Comment.objects.create(
         news=news,
         author=author,

@@ -54,11 +54,11 @@ class TestNotesContent(TestCase):
 
     def test_note_form_in_create_and_edit(self):
         url_add = reverse('notes:add')
-        response_add = self.client_user.get(url_add)
+        response_add = self.client_user1.get(url_add)
         self.assertIn('form', response_add.context)
         self.assertIsInstance(response_add.context['form'], NoteForm)
 
-        url_edit = reverse('notes:edit', args=(self.note.slug,))
-        response_edit = self.client_user.get(url_edit)
+        url_edit = reverse('notes:edit', args=(self.note1.slug,))
+        response_edit = self.client_user1.get(url_edit)
         self.assertIn('form', response_edit.context)
         self.assertIsInstance(response_edit.context['form'], NoteForm)

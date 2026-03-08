@@ -3,6 +3,8 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from notes.models import Note
+from django.utils.text import slugify
+
 
 User = get_user_model()
 
@@ -60,7 +62,7 @@ class TestNoteLogic(TestCase):
         response = self.client_author.post(url, data=data)
         self.assertEqual(response.status_code, 302)
         note = Note.objects.get(title='Тестовая заметка')
-        expected_slug = 'Тестовая заметка'
+        expected_slug = slugify('Тестовая заметка')
         self.assertEqual(note.slug, expected_slug)
 
     def test_user_can_edit_and_delete_own_note(self):
