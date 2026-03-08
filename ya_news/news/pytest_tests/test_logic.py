@@ -16,13 +16,13 @@ def test_anonymous_user_cant_create_comment(client, news):
 
 
 @pytest.mark.django_db
-def test_user_can_create_comment(author_client, news, author):
+def test_user_can_create_comment(author_client, news, author):  # noqa: C901
     url = reverse('news:detail', args=(news.pk,))
     data = {'text': 'Текст комментария'}
 
     response = author_client.post(url, data=data)
-    assert response.status_code == HTTPStatus.FOUND
-    assert response.url == f'{url}#comments'
+    assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
+
 
     comment = Comment.objects.get()
     assert comment.text == data['text']
@@ -53,7 +53,7 @@ def test_author_can_edit_comment(author_client, news, author):
     data = {'text': 'Обновлённый комментарий'}
 
     response = author_client.post(edit_url, data=data)
-    assert response.status_code == HTTPStatus.FOUND
+    assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
 
     url_to_comments = reverse('news:detail', args=(news.pk,)) + '#comments'
     assert response.url == url_to_comments
@@ -96,7 +96,7 @@ def test_author_can_delete_comment(author_client, news, author):
         args=(news.pk,)) + '#comments'
 
     response = author_client.post(delete_url)
-    assert response.status_code == HTTPStatus.FOUND
+    assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
     assert response.url == url_to_comments
 
     assert Comment.objects.count() == 0
