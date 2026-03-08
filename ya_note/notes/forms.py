@@ -9,18 +9,21 @@ WARNING = ' - такой slug уже существует, придумайте 
 
 
 class NoteForm(forms.ModelForm):
+    """Форма для создания или обновления заметки."""
+
     class Meta:
         model = Note
         fields = ('title', 'text', 'slug')
-        widgets = {'slug': forms.HiddenInput()}  # скрываем поле от пользователя
 
     def clean_slug(self):
-        slug = self.cleaned_data.get('slug')
+        """Обрабатывает случай, если slug не уникален."""
+        cleaned_data = super().clean()
+        slug = cleaned_data.get('slug')
         if not slug:
-            title = self.cleaned_data.get('title')
+            title = cleaned_data.get('title')
             slug = slugify(title)[:100]
-
-        if Note.objects.filter(slug=slug).exclude(pk=self.instance.pk).exists():
-            raise ValidationError('Такой slug уже существует!')
-
+        if Note.objects.filter(
+                slug=slug
+        ).exclude(id=self.instance.pk).exists():
+            raise ValidationError(slug + WARNING)
         return slug
