@@ -23,7 +23,6 @@ def test_user_can_create_comment(author_client, news, author):  # noqa: C901
     response = author_client.post(url, data=data)
     assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
 
-
     comment = Comment.objects.get()
     assert comment.text == data['text']
     assert comment.news == news
