@@ -22,9 +22,7 @@ def test_user_can_create_comment(author_client, news, author):
 
     response = author_client.post(url, data=data)
     assert response.status_code == HTTPStatus.FOUND
-
-    url_to_comments = reverse('news:detail', args=(news.pk,)) + '#comments'
-    assert response.url == url_to_comments
+    assert response.url == f'{url}#comments'
 
     comment = Comment.objects.get()
     assert comment.text == data['text']
