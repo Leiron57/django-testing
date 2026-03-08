@@ -20,7 +20,7 @@ def test_pages_available_for_anonymous(client, news):
     logout_url = reverse('users:logout')
     response = client.post(logout_url)
     assert response.status_code == HTTPStatus.OK
-    assert response.url.startswith(reverse('users:login'))
+    assert response['Location'].startswith(reverse('users:login'))
 
 
 @pytest.mark.django_db
