@@ -19,11 +19,8 @@ def test_pages_available_for_anonymous(client, news):
 
     logout_url = reverse('users:logout')
     response = client.post(logout_url)
-
-    assert response.status_code == HTTPStatus.OK
-
-    content = response.content.decode()
-    assert 'Выход' in content or 'Войти' in content
+    assert response.status_code == HTTPStatus.FOUND
+    assert response.url.startswith(reverse('users:login'))
 
 
 @pytest.mark.django_db
