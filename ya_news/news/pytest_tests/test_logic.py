@@ -17,7 +17,7 @@ def test_anonymous_user_cant_create_comment(client, news):
 
 @pytest.mark.django_db
 def test_user_can_create_comment(author_client, news, author):
-    url = reverse('news:detail', args=(news.pk,))
+    url = reverse('news:comment', args=(news.pk,))
     data = {'text': 'Текст комментария'}
 
     response = author_client.post(url, data=data)
@@ -50,7 +50,7 @@ def test_author_can_edit_comment(author_client, news, author):
         text='Текст комментария'
     )
     edit_url = reverse('news:edit', args=(comment.pk,))
-    url_to_comments = reverse('news:detail', args=(news.pk,)) + '#comments'
+    url_to_comments = reverse('news:comment', args=(news.pk,)) + '#comments'
 
     data = {'text': 'Обновлённый комментарий'}
     response = author_client.post(edit_url, data=data)
