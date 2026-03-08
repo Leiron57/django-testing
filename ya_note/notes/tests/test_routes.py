@@ -44,11 +44,11 @@ class TestRoutes(TestCase):
                 self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_note_pages_only_for_author(self):
-        note_id = self.note.id
+        note_slug = self.note.slug
         urls = (
-            reverse('notes:detail', args=(note_id,)),
-            reverse('notes:edit', args=(note_id,)),
-            reverse('notes:delete', args=(note_id,)),
+            reverse('notes:detail', args=(note_slug,)),
+            reverse('notes:edit', args=(note_slug,)),
+            reverse('notes:delete', args=(note_slug,)),
         )
         for url in urls:
             with self.subTest(url=url, user='author'):
