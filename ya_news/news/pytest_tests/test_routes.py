@@ -15,7 +15,7 @@ def test_pages_available_for_anonymous(client, news):
     for name, args in urls:
         url = reverse(name, args=args)
         response = client.get(url)
-        assert response.status_code == HTTPStatus.OK
+        assert response.status_code == HTTPStatus.FOUND
 
     logout_url = reverse('users:logout')
     response = client.post(logout_url)
