@@ -18,7 +18,7 @@ auth_urls = ([
     path(
         'logout/',
         auth_views.LogoutView.as_view(
-            template_name='registration/logout.html'
+            next_page='users:login'
         ),
         name='logout',
     ),
