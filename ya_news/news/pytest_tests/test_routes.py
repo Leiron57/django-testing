@@ -10,13 +10,16 @@ def test_pages_available_for_anonymous(client, news):
         ('news:detail', (news.id,)),
         ('users:login', None),
         ('users:signup', None),
-        ('users:logout', None),
     )
 
     for name, args in urls:
         url = reverse(name, args=args)
         response = client.get(url)
         assert response.status_code == HTTPStatus.OK
+
+    logout_url = reverse('users:logout')
+    response = client.post(logout_url)
+    assert response.status_code == HTTPStatus.FOUND
 
 
 @pytest.mark.django_db
