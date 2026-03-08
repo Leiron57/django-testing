@@ -22,7 +22,9 @@ def test_user_can_create_comment(author_client, news, author):
 
     response = author_client.post(url, data=data)
     assert response.status_code == HTTPStatus.FOUND
-    assert response.url == f'{url}#comments'
+
+    url_to_comments = reverse('news:detail', args=(news.pk,)) + '#comments'
+    assert response.url == url_to_comments
 
     comment = Comment.objects.get()
     assert comment.text == data['text']
@@ -50,12 +52,12 @@ def test_author_can_edit_comment(author_client, news, author):
         text='Текст комментария'
     )
     edit_url = reverse('news:edit', args=(comment.pk,))
-    url_to_comments = reverse('news:comment', args=(news.pk,)) + '#comments'
-
     data = {'text': 'Обновлённый комментарий'}
-    response = author_client.post(edit_url, data=data)
 
+    response = author_client.post(edit_url, data=data)
     assert response.status_code == HTTPStatus.FOUND
+
+    url_to_comments = reverse('news:detail', args=(news.pk,)) + '#comments'
     assert response.url == url_to_comments
 
     comment.refresh_from_db()
