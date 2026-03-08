@@ -73,7 +73,9 @@ class NewsComment(
         return self.render_to_response(context)
 
     def get_success_url(self):
-        return reverse('news:detail', kwargs={'pk': self.object.pk}) + '#comments'
+        return reverse(
+            'news:detail',
+            kwargs={'pk': self.object.pk}) + '#comments'
 
 
 class NewsDetailView(generic.View):
