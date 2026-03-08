@@ -78,15 +78,20 @@ class TestRoutes(TestCase):
                 self.assertRedirects(response, f'{login_url}?next={url}')
 
     def test_auth_pages_available_for_all(self):
-        urls = (
-            reverse('users:login'),
-            reverse('users:logout'),
-            reverse('users:signup'),
-        )
-        for url in urls:
+        login_url = reverse('users:login')
+        signup_url = reverse('users:signup')
+        logout_url = reverse('users:logout')
+
+        for url in (login_url, signup_url):
             with self.subTest(url=url):
                 response = self.anonymous_client.get(url)
-                self.assertEqual(response.status_code, HTTPStatus.FOUND)
+                self.assertEqual(response.status_code, HTTPStatus.OK)
 
                 response_auth = self.author_client.get(url)
-                self.assertEqual(response_auth.status_code, HTTPStatus.FOUND)
+                self.assertEqual(response_auth.status_code, HTTPStatus.OK)
+
+        for client in (self.anonymous_client, self.author_client):
+            with self.subTest(url=logout_url, client=client):
+                response = client.post(logout_url)
+                self.assertEqual(response.status_code, HTTPStatus.FOUND)
+                self.assertIn(login_url, response.url)
