@@ -4,6 +4,7 @@ from django.views import generic
 
 from .forms import NoteForm
 from .models import Note
+from django.utils.text import slugify
 
 
 class Home(generic.TemplateView):
@@ -34,6 +35,8 @@ class NoteCreate(NoteBase, generic.CreateView):
     def form_valid(self, form):
         new_note = form.save(commit=False)
         new_note.author = self.request.user
+        if not new_note.slug:
+            new_note.slug = slugify(new_note.title)[:100]
         new_note.save()
         return super().form_valid(form)
 
