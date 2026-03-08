@@ -2,7 +2,6 @@ import pytest
 from http import HTTPStatus
 from django.urls import reverse
 
-
 @pytest.mark.django_db
 def test_pages_available_for_anonymous(client, news):
     urls = (

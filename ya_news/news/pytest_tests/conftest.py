@@ -7,20 +7,19 @@ User = get_user_model()
 
 @pytest.fixture
 def author(db):
-    return User.objects.create_user(username='Автор', password='password')
+    return User.objects.create_user(username='author', password='password')
 
 
 @pytest.fixture
 def not_author(db):
-    return User.objects.create_user(username='Читатель', password='password')
+    return User.objects.create_user(username='reader', password='password')
 
 
 @pytest.fixture
 def news(db, author):
-    """Создаём объект новости"""
     return News.objects.create(
-        title='Заголовок',
-        text='Текст',
+        title='Test News',
+        content='Test content',
         author=author
     )
 
@@ -30,7 +29,7 @@ def comment(db, author, news):
     return Comment.objects.create(
         news=news,
         author=author,
-        text='Комментарий'
+        text='Test comment'
     )
 
 
