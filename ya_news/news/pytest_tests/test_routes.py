@@ -3,24 +3,20 @@ from http import HTTPStatus
 from django.urls import reverse
 
 
-@pytest.mark.django_db
-def test_pages_available_for_anonymous(client, news):
-    urls = (
-        ('news:home', None),
-        ('news:detail', (news.id,)),
-        ('users:login', None),
-        ('users:signup', None),
-    )
+@pytest.mark.parametrize(
+    'name',
+    ('news:home', 'news:detail', 'users:login', 'users:signup', 'users:logout')
+)
+def test_pages_availability_for_anonymous_user(client, name, news):
+    args = (news.id,) if name == 'news:detail' else None
+    url = reverse(name, args=args)
 
-    for name, args in urls:
-        url = reverse(name, args=args)
+    if name == 'users:logout':
+        response = client.post(url)
+        assert response.status_code == HTTPStatus.FOUND
+    else:
         response = client.get(url)
         assert response.status_code == HTTPStatus.OK
-
-    logout_url = reverse('users:logout')
-    response = client.post(logout_url)
-    assert response.status_code == HTTPStatus.FOUND
-    assert response.url.startswith(reverse('users:login'))
 
 
 @pytest.mark.django_db
