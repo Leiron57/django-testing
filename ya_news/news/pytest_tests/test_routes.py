@@ -13,7 +13,14 @@ from django.urls import reverse
         ("users:signup", None, HTTPStatus.OK),
     ]
 )
-def test_pages_get_available_for_anonymous(client, news, name, args, expected_status):
+
+def test_pages_get_available_for_anonymous(
+    client,
+    news,
+    name,
+    args,
+    expected_status
+):
     resolved_args = args(news) if callable(args) else args
     url = reverse(name, args=resolved_args)
     response = client.get(url)
