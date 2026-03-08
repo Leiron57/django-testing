@@ -37,15 +37,16 @@ class NewsDetail(generic.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['news'] = self.object
         if self.request.user.is_authenticated:
             context['form'] = CommentForm()
         return context
 
 
 class NewsComment(
-        LoginRequiredMixin,
-        generic.detail.SingleObjectMixin,
-        generic.FormView
+    LoginRequiredMixin,
+    generic.detail.SingleObjectMixin,
+    generic.FormView
 ):
     model = News
     form_class = CommentForm
@@ -55,6 +56,11 @@ class NewsComment(
         self.object = self.get_object()
         return super().post(request, *args, **kwargs)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['news'] = self.object
+        return context
+
     def form_valid(self, form):
         comment = form.save(commit=False)
         comment.news = self.object
@@ -62,9 +68,12 @@ class NewsComment(
         comment.save()
         return super().form_valid(form)
 
+    def form_invalid(self, form):
+        context = self.get_context_data(form=form)
+        return self.render_to_response(context)
+
     def get_success_url(self):
-        post = self.get_object()
-        return reverse('news:detail', kwargs={'pk': post.pk}) + '#comments'
+        return reverse('news:detail', kwargs={'pk': self.object.pk}) + '#comments'
 
 
 class NewsDetailView(generic.View):
