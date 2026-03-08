@@ -17,12 +17,14 @@ def test_anonymous_user_cant_create_comment(client, news):
 
 @pytest.mark.django_db
 def test_user_can_create_comment(author_client, news, author):
-    url = reverse('news:comment', args=(news.pk,))
+    form_url = reverse('news:comment', args=(news.pk,))
     data = {'text': 'Текст комментария'}
 
-    response = author_client.post(url, data=data)
+    response = author_client.post(form_url, data=data)
     assert response.status_code == HTTPStatus.FOUND
-    assert response.url == f'{url}#comments'
+
+    expected_url = reverse('news:detail', args=(news.pk,)) + '#comments'
+    assert response.url == expected_url
 
     comment = Comment.objects.get()
     assert comment.text == data['text']
