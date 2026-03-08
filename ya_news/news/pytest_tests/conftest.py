@@ -16,11 +16,10 @@ def not_author(db):
 
 
 @pytest.fixture
-def news(db, author):
+def news(db):
     return News.objects.create(
         title='Test News',
-        content='Test content',
-        author=author
+        text='Test content'
     )
 
 
