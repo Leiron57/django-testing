@@ -5,22 +5,29 @@ from django.urls import reverse
 
 @pytest.mark.django_db
 def test_pages_available_for_anonymous(client, news):
+    # Проверка доступности страниц для анонимного пользователя
     urls = (
         ('news:home', None),
         ('news:detail', (news.id,)),
         ('users:login', None),
         ('users:signup', None),
     )
-
     for name, args in urls:
         url = reverse(name, args=args)
         response = client.get(url)
         assert response.status_code == HTTPStatus.OK
 
+    # Проверка выхода с редиректом на страницу логина
     logout_url = reverse('users:logout')
-    response = client.post(logout_url, follow=True)
-    assert response.status_code == HTTPStatus.OK
-    assert 'Login' in response.content.decode()
+    # follow=False чтобы получить сам редирект, а не страницу после него
+    response = client.post(logout_url, follow=False)
+
+    # Статус должен быть 302 (FOUND), так как делается редирект
+    assert response.status_code == HTTPStatus.FOUND
+
+    # Редирект идёт на страницу логина
+    login_url = reverse('users:login')
+    assert response['Location'].startswith(login_url)
 
 
 @pytest.mark.django_db
