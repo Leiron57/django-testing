@@ -1,5 +1,4 @@
 import pytest
-from django.contrib.auth import get_user_model
 from news.models import News, Comment
 from django.test.client import Client
 from typing import Any
