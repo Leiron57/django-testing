@@ -8,7 +8,7 @@ from news.models import Comment
 
 @pytest.mark.django_db
 def test_anonymous_user_cant_create_comment(client, news):
-    url = reverse('news:detail', args=(news.pk,))
+    url = reverse('news:comment', args=(news.pk,))
     data = {'text': 'Текст комментария'}
 
     client.post(url, data=data)
@@ -34,11 +34,12 @@ def test_user_can_create_comment(author_client, news, author):
 
 @pytest.mark.django_db
 def test_user_cant_use_bad_words(author_client, news):
-    url = reverse('news:detail', args=(news.pk,))
+    url = reverse('news:comment', args=(news.pk,))
     data = {'text': f'Текст с запрещённым словом: {BAD_WORDS[0]}'}
 
     response = author_client.post(url, data=data)
-    assert response.status_code == HTTPStatus.OK
+    assert response.status_code == HTTPStatus.FOUND
+    assert 'form' in response.context
     form = response.context['form']
     assert form.errors['text'] == [WARNING]
     assert Comment.objects.count() == 0
@@ -55,7 +56,7 @@ def test_author_can_edit_comment(author_client, news, author):
     data = {'text': 'Обновлённый комментарий'}
 
     response = author_client.post(edit_url, data=data)
-    assert response.status_code == HTTPStatus.OK
+    assert response.status_code == HTTPStatus.FOUND
 
     comment.refresh_from_db()
     assert comment.text == data['text']
