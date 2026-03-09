@@ -34,7 +34,7 @@ def test_user_can_create_comment(author_client, news, author):
 
 @pytest.mark.django_db
 def test_user_cant_use_bad_words(author_client, news):
-    url = reverse('news:detail', args=(news.pk,))
+    url = reverse('news:comment', args=(news.pk,))
     data = {'text': f'Текст с запрещённым словом: {BAD_WORDS[0]}'}
 
     response = author_client.post(url, data=data)
