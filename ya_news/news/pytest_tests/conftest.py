@@ -2,6 +2,7 @@ import pytest
 from django.contrib.auth import get_user_model
 from news.models import News, Comment
 from django.test.client import Client
+from typing import Any
 
 User = get_user_model()
 
@@ -40,7 +41,7 @@ def author_client(author: Any) -> Client:
 
 
 @pytest.fixture
-def not_author_client(not_author) -> Client:
+def not_author_client(not_author: Any) -> Client:
     client = Client()
     client.force_login(not_author)
     return client
