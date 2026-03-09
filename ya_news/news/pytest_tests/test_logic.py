@@ -34,16 +34,20 @@ def test_user_can_create_comment(author_client, news, author):
 
 
 @pytest.mark.django_db
-def test_user_cant_use_bad_words(author_client, news):
+@pytest.mark.parametrize(
+    'bad_word, warning',
+    [(BAD_WORDS[0], WARNING)]
+)
+def test_user_cant_use_bad_words(author_client, news, bad_word, warning):
     url = reverse('news:detail', args=(news.pk,))
-    data = {'text': f'Текст с запрещённым словом: {BAD_WORDS[0]}'}
+    data = {'text': f'Текст с запрещённым словом: {bad_word}'}
 
     response = author_client.post(url, data=data)
 
     form = response.context['form']
     assertFormError(
-        form,
-        field='text',
+        form, 
+        field='text', 
         errors=WARNING
     )
 
