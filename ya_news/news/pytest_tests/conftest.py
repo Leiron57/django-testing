@@ -1,6 +1,9 @@
 import pytest
 from django.contrib.auth import get_user_model
 from news.models import News, Comment
+from django.test.client import Client
+from django.urls import reverse
+from django.conf import settings
 
 User = get_user_model()
 
@@ -33,12 +36,18 @@ def comment(db, author, news):
 
 
 @pytest.fixture
-def author_client(client, author):
+def author(django_user_model):
+    return django_user_model.objects.create_user(username='автор', password='password')
+
+@pytest.fixture
+def author_client(author) -> Client:
+    client = Client()
     client.force_login(author)
     return client
 
-
 @pytest.fixture
-def not_author_client(client, not_author):
-    client.force_login(not_author)
+def not_author_client(django_user_model) -> Client:
+    user = django_user_model.objects.create_user(username='не автор', password='password')
+    client = Client()
+    client.force_login(user)
     return client

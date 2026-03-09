@@ -85,7 +85,6 @@ class NewsDetailView(generic.View):
         return view(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        # анонимные пользователи не могут создавать комментарии
         if not request.user.is_authenticated:
             view = NewsDetail.as_view()
             return view(request, *args, **kwargs)
