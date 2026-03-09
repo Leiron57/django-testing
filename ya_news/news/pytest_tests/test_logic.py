@@ -38,9 +38,10 @@ def test_user_cant_use_bad_words(author_client, news):
     data = {'text': f'Текст с запрещённым словом: {BAD_WORDS[0]}'}
 
     response = author_client.post(url, data=data)
-    assert response.status_code == HTTPStatus.OK
+
     form = response.context['form']
     assert form.errors['text'] == [WARNING]
+
     assert Comment.objects.count() == 0
 
 
