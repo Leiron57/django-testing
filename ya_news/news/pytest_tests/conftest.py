@@ -27,6 +27,7 @@ def not_author_client(not_author: Any) -> Client:
     client.force_login(not_author)
     return client
 
+
 @pytest.fixture
 def news(db):
     return News.objects.create(
