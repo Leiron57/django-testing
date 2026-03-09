@@ -5,17 +5,6 @@ from django.test.client import Client
 
 User = get_user_model()
 
-
-@pytest.fixture
-def author(db):
-    return User.objects.create_user(username='author', password='password')
-
-
-@pytest.fixture
-def not_author(db):
-    return User.objects.create_user(username='reader', password='password')
-
-
 @pytest.fixture
 def news(db):
     return News.objects.create(
@@ -34,26 +23,24 @@ def comment(db, author, news):
 
 
 @pytest.fixture
-def author(django_user_model):
-    return django_user_model.objects.create_user(
-        username='автор',
-        password='password'
-    )
+def author(django_user_model: Any) -> Any:
+    return django_user_model.objects.create(username='author')
 
 
 @pytest.fixture
-def author_client(author) -> Client:
+def not_author(django_user_model: Any) -> Any:
+    return django_user_model.objects.create(username='reader')
+
+
+@pytest.fixture
+def author_client(author: Any) -> Client:
     client = Client()
     client.force_login(author)
     return client
 
 
 @pytest.fixture
-def not_author_client(django_user_model) -> Client:
-    user = django_user_model.objects.create_user(
-        username='не автор',
-        password='password'
-    )
+def not_author_client(not_author) -> Client:
     client = Client()
-    client.force_login(user)
+    client.force_login(not_author)
     return client
