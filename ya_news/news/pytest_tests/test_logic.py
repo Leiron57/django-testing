@@ -89,14 +89,14 @@ def test_author_can_delete_comment(author_client, news, author):
         author=author,
         text='Текст комментария'
     )
+
     delete_url = reverse('news:delete', args=(comment.pk,))
-    url_to_comments = reverse(
-        'news:detail',
-        args=(news.pk,)) + '#comments'
+    url_to_comments = reverse('news:detail', args=(news.pk,)) + '#comments'
 
     response = author_client.post(delete_url)
-    assert response.status_code == HTTPStatus.OK
 
+    assert response.status_code == HTTPStatus.FOUND
+    assert response.url == url_to_comments
     assert Comment.objects.count() == 0
 
 
