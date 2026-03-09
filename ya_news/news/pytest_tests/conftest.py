@@ -6,6 +6,7 @@ from typing import Any
 
 User = get_user_model()
 
+
 @pytest.fixture
 def news(db):
     return News.objects.create(
