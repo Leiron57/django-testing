@@ -37,17 +37,17 @@ def test_user_cant_use_bad_words(author_client, news):
     url = reverse('news:detail', args=(news.pk,))  # оставляем ваш url
     data = {'text': f'Текст с запрещённым словом: {BAD_WORDS[0]}'}
 
-    # POST-запрос
     response = author_client.post(url, data=data)
 
-    # response.context будет доступен только если form_invalid рендерит template
     form = response.context['form']
 
-    # Проверка ошибки
     from django.test import TestCase
-    TestCase().assertFormError(form, field='text', errors=[WARNING])
+    TestCase().assertFormError(
+        form,
+        field='text',
+        errors=[WARNING]
+    )
 
-    # Проверяем, что комментарий не был создан
     assert Comment.objects.count() == 0
 
 
