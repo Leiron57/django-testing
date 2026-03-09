@@ -40,12 +40,9 @@ def test_user_cant_use_bad_words(author_client, news):
 
     response = author_client.post(url, data=data)
 
-    TestCase().assertFormError(
-        response,
-        form='form',
-        field='text',
-        errors=[WARNING]
-    )
+    form = response.context['form']
+
+    TestCase().assertFormError(form, field='text', errors=[WARNING])
 
     assert Comment.objects.count() == 0
 
