@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views import generic
 
@@ -78,30 +78,20 @@ class NewsComment(
             kwargs={'pk': self.object.pk}) + '#comments'
 
 
-class NewsDetailView(generic.DetailView):
-    model = News
-    template_name = 'news/detail.html'
-    context_object_name = 'news'
+class NewsDetailView(generic.View):
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['form'] = CommentForm()
-        return context
+    def get(self, request, *args, **kwargs):
+        view = NewsDetail.as_view()
+        return view(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        form = CommentForm(request.POST)
+        # анонимные пользователи не могут создавать комментарии
+        if not request.user.is_authenticated:
+            view = NewsDetail.as_view()
+            return view(request, *args, **kwargs)
 
-        if form.is_valid():
-            comment = form.save(commit=False)
-            comment.news = self.object
-            comment.author = request.user
-            comment.save()
-            return redirect(f'{self.object.get_absolute_url()}#comments')
-
-        context = self.get_context_data()
-        context['form'] = form
-        return self.render_to_response(context)
+        view = NewsComment.as_view()
+        return view(request, *args, **kwargs)
 
 
 class CommentBase(LoginRequiredMixin):
@@ -123,6 +113,10 @@ class CommentUpdate(CommentBase, generic.UpdateView):
     """Редактирование комментария."""
     template_name = 'news/edit.html'
     form_class = CommentForm
+
+    def form_valid(self, form):
+        form.save()
+        return self.render_to_response(self.get_context_data(form=form))
 
 
 class CommentDelete(CommentBase, generic.DeleteView):
