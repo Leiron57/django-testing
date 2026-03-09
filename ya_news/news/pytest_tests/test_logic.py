@@ -38,7 +38,7 @@ def test_user_can_create_comment(author_client, news, author):
     'bad_word, warning',
     [(BAD_WORDS[0], WARNING)]
 )
-def test_user_cant_use_bad_words(author_client, news, bad_word, warning):
+def test_user_cant_use_bad_words(author_client, news, bad_word, WARNING):
     url = reverse('news:detail', args=(news.pk,))
     data = {'text': f'Текст с запрещённым словом: {bad_word}'}
 
