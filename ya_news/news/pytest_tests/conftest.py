@@ -4,8 +4,6 @@ from news.models import News, Comment
 from django.test.client import Client
 from typing import Any
 
-User = get_user_model()
-
 
 @pytest.fixture
 def news(db):
