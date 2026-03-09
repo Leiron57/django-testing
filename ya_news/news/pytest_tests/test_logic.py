@@ -4,6 +4,7 @@ from django.urls import reverse
 
 from news.forms import BAD_WORDS, WARNING
 from news.models import Comment
+from django.test import TestCase
 
 
 @pytest.mark.django_db
@@ -39,9 +40,13 @@ def test_user_cant_use_bad_words(author_client, news):
 
     response = author_client.post(url, data=data)
 
-    form = response.context['form']
-    assert form.errors['text'] == [WARNING]
-
+    TestCase().assertFormError(
+        response,
+        form='form',
+        field='text',
+        errors=[WARNING]
+    )
+    
     assert Comment.objects.count() == 0
 
 
