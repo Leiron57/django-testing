@@ -5,23 +5,6 @@ from typing import Any
 
 
 @pytest.fixture
-def news(db):
-    return News.objects.create(
-        title='Test News',
-        text='Test content'
-    )
-
-
-@pytest.fixture
-def comment(db, author, news):
-    return Comment.objects.create(
-        news=news,
-        author=author,
-        text='Test comment'
-    )
-
-
-@pytest.fixture
 def author(django_user_model: Any) -> Any:
     return django_user_model.objects.create(username='author')
 
@@ -43,3 +26,19 @@ def not_author_client(not_author: Any) -> Client:
     client = Client()
     client.force_login(not_author)
     return client
+
+@pytest.fixture
+def news(db):
+    return News.objects.create(
+        title='Test News',
+        text='Test content'
+    )
+
+
+@pytest.fixture
+def comment(db, author, news):
+    return Comment.objects.create(
+        news=news,
+        author=author,
+        text='Test comment'
+    )
