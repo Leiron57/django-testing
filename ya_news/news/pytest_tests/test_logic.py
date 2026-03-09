@@ -46,8 +46,8 @@ def test_user_cant_use_bad_words(author_client, news, bad_word, warning):
 
     form = response.context['form']
     assertFormError(
-        form, 
-        field='text', 
+        form,
+        field='text',
         errors=WARNING
     )
 
