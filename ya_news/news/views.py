@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.views import generic
 
@@ -78,15 +78,30 @@ class NewsComment(
             kwargs={'pk': self.object.pk}) + '#comments'
 
 
-class NewsDetailView(generic.View):
+class NewsDetailView(generic.DetailView):
+    model = News
+    template_name = 'news/detail.html'
+    context_object_name = 'news'
 
-    def get(self, request, *args, **kwargs):
-        view = NewsDetail.as_view()
-        return view(request, *args, **kwargs)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = CommentForm()
+        return context
 
     def post(self, request, *args, **kwargs):
-        view = NewsComment.as_view()
-        return view(request, *args, **kwargs)
+        self.object = self.get_object()
+        form = CommentForm(request.POST)
+
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.news = self.object
+            comment.author = request.user
+            comment.save()
+            return redirect(f'{self.object.get_absolute_url()}#comments')
+
+        context = self.get_context_data()
+        context['form'] = form
+        return self.render_to_response(context)
 
 
 class CommentBase(LoginRequiredMixin):
