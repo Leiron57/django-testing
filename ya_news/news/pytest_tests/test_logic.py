@@ -34,17 +34,17 @@ def test_user_can_create_comment(author_client, news, author):
     assert comment.author == author
 
 
-@pytest.mark.parametrize('bad_words', BAD_WORDS)
-def test_user_cant_use_bad_words(
-    author_client: Client,
-    detail_url: str,
-    bad_words
-) -> None:
-    bad_words_data = {'text': f'Какой-то текст, {bad_words}, еще текст'}
-    response = author_client.post(detail_url, data=bad_words_data)
-    form = response.context['form']
+@pytest.mark.parametrize('bad_word', BAD_WORDS)
+def test_user_cant_use_bad_words(author_client, news, bad_word):
+    url = reverse('news:comment', args=(news.pk,))
+    data = {'text': f'Какой-то текст, {bad_word}, еще текст'}
+
+    response = author_client.post(url, data=data)
+
+    # Ожидаем, что ответ содержит страницу с формой и ошибкой
+    assert response.status_code == HTTPStatus.OK
     assertFormError(
-        form=form,
+        response.context['form'],
         field='text',
         errors=WARNING
     )
