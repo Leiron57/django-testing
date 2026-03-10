@@ -40,17 +40,13 @@ class NewsDetail(generic.DetailView):
         return context
 
 
-class NewsComment(
-        LoginRequiredMixin,
-        generic.detail.SingleObjectMixin,
-        generic.FormView
-):
+class NewsComment(LoginRequiredMixin, generic.detail.SingleObjectMixin, generic.FormView):
     model = News
     form_class = CommentForm
     template_name = 'news/detail.html'
 
     def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
+        self.object = self.get_object()  # News object
         return super().post(request, *args, **kwargs)
 
     def form_valid(self, form):
@@ -60,19 +56,11 @@ class NewsComment(
         comment.save()
         return super().form_valid(form)
 
-    def form_invalid(self, form):
-        context = self.get_context_data(
-            object=self.object,
-            news=self.object,
-            form=form
-        )
-        return self.render_to_response(context)
-
     def get_success_url(self):
-        return (
-            reverse('news:detail', kwargs={'pk': self.object.pk})
-            + '#comments'
-        )
+        # Гарантированно используем self.object
+        if not self.object:
+            return reverse('news:home') + '#comments'
+        return reverse('news:detail', kwargs={'pk': self.object.pk}) + '#comments'
 
 
 class NewsDetailView(generic.View):

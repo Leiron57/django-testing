@@ -5,7 +5,7 @@ from django.urls import include, path
 from django.views.generic import CreateView
 
 urlpatterns = [
-    path('', include(('news.urls', 'news'), namespace='news')),
+    path('', include('news.urls', namespace='news')),  # Updated to direct app import
     path('admin/', admin.site.urls),
 ]
 
