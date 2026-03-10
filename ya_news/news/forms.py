@@ -18,7 +18,6 @@ class CommentForm(forms.ModelForm):
 
     def clean_text(self):
         text = self.cleaned_data['text']
-        # Лучше использовать word boundaries (\b), чтобы избежать частичных совпадений
         for bad_word in BAD_WORDS:
             if re.search(rf'\b{re.escape(bad_word)}\b', text, re.IGNORECASE):
                 raise forms.ValidationError(WARNING)

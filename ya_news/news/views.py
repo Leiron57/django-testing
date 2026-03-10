@@ -116,11 +116,12 @@ class CommentUpdate(CommentBase, generic.UpdateView):
     model = Comment  # важно: нужен model или queryset
 
     def get_success_url(self):
-        # После сохранения — редирект на страницу новости с якорем #comments
-        return reverse_lazy('news:detail', args=(self.object.news.pk,)) + '#comments'
+        return reverse_lazy(
+            'news:detail',
+            args=(self.object.news.pk,)
+        ) + '#comments'
 
     def form_valid(self, form):
-        # Вызов стандартного поведения — делает save() и редирект на success_url
         return super().form_valid(form)
 
 
