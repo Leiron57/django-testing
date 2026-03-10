@@ -6,6 +6,7 @@ from django.views import generic
 
 from .forms import CommentForm
 from .models import Comment, News
+from django.urls import reverse_lazy
 
 
 class NewsList(generic.ListView):
@@ -112,10 +113,15 @@ class CommentUpdate(CommentBase, generic.UpdateView):
     """Редактирование комментария."""
     template_name = 'news/edit.html'
     form_class = CommentForm
+    model = Comment  # важно: нужен model или queryset
+
+    def get_success_url(self):
+        # После сохранения — редирект на страницу новости с якорем #comments
+        return reverse_lazy('news:detail', args=(self.object.news.pk,)) + '#comments'
 
     def form_valid(self, form):
-        form.save()
-        return self.render_to_response(self.get_context_data(form=form))
+        # Вызов стандартного поведения — делает save() и редирект на success_url
+        return super().form_valid(form)
 
 
 class CommentDelete(CommentBase, generic.DeleteView):

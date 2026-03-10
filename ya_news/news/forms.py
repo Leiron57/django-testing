@@ -1,7 +1,7 @@
-from django.forms import ModelForm
+from django import forms
 from django.core.exceptions import ValidationError
-
 from .models import Comment
+import re
 
 BAD_WORDS = (
     'редиска',
@@ -11,17 +11,15 @@ BAD_WORDS = (
 WARNING = 'Не ругайтесь!'
 
 
-class CommentForm(ModelForm):
-
+class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
         fields = ('text',)
 
     def clean_text(self):
-        """Не позволяем ругаться в комментариях."""
         text = self.cleaned_data['text']
-        lowered_text = text.lower()
-        for word in BAD_WORDS:
-            if word in lowered_text:
-                raise ValidationError(WARNING)
+        # Лучше использовать word boundaries (\b), чтобы избежать частичных совпадений
+        for bad_word in BAD_WORDS:
+            if re.search(rf'\b{re.escape(bad_word)}\b', text, re.IGNORECASE):
+                raise forms.ValidationError(WARNING)
         return text
