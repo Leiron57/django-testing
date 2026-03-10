@@ -7,6 +7,7 @@ from news.models import Comment
 from pytest_django.asserts import assertFormError
 from django.test import Client
 
+
 @pytest.mark.django_db
 def test_anonymous_user_cant_create_comment(client, news):
     url = reverse('news:detail', args=(news.pk,))
