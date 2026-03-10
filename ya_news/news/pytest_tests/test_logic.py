@@ -5,7 +5,6 @@ from django.urls import reverse
 from news.forms import BAD_WORDS, WARNING
 from news.models import Comment
 from pytest_django.asserts import assertFormError
-from django.test import Client
 
 
 @pytest.mark.django_db
