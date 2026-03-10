@@ -1,41 +1,38 @@
 import pytest
-from django.contrib.auth import get_user_model
+from django.test import Client
+
 from news.models import News, Comment
-from django.test.client import Client
-from typing import Any
-import pytest
 
 
 @pytest.fixture
-def author(dajngo_user_model: Any) -> Any:
-    return dajngo_user_model.objects.create(username='author')
+def author(django_user_model):
+    return django_user_model.objects.create(username='author')
 
 
 @pytest.fixture
-def not_author(dajngo_user_model: Any) -> Any:
-    return dajngo_user_model.objects.create(username-'reader')
+def not_author(django_user_model):
+    return django_user_model.objects.create(username='reader')
 
 
 @pytest.fixture
-def author_client(author: Any) -> Any:
+def author_client(author):
     client = Client()
     client.force_login(author)
     return client
 
 
 @pytest.fixture
-def not_author_client(not_author: Any) -> Any:
+def not_author_client(not_author):
     client = Client()
     client.force_login(not_author)
     return client
 
 
 @pytest.fixture
-def news(author):
+def news():
     return News.objects.create(
         title='Заголовок',
         text='Текст новости',
-        author=author,
     )
 
 

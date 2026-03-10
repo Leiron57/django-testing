@@ -15,7 +15,6 @@ class News(models.Model):
         verbose_name = 'Новость'
         app_label = 'ya_news.news'
 
-
     def __str__(self):
         return self.title
 

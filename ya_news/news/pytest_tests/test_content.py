@@ -1,5 +1,6 @@
 import pytest
 from datetime import timedelta
+
 from django.conf import settings
 from django.urls import reverse
 from django.utils import timezone
@@ -11,6 +12,7 @@ from news.forms import CommentForm
 @pytest.mark.django_db
 def test_news_count(client):
     today = timezone.now()
+    news_count = settings.NEWS_COUNT_ON_HOME_PAGE + 1
 
     News.objects.bulk_create([
         News(
@@ -18,13 +20,14 @@ def test_news_count(client):
             text='Просто текст',
             date=today - timedelta(days=index)
         )
-        for index in range(settings.NEWS_COUNT_ON_HOME_PAGE + 1)
+        for index in range(news_count)
     ])
 
     url = reverse('news:home')
     response = client.get(url)
 
     object_list = response.context['object_list']
+
     assert len(object_list) == settings.NEWS_COUNT_ON_HOME_PAGE
 
 
@@ -46,9 +49,8 @@ def test_news_order(client):
 
     object_list = response.context['object_list']
     all_dates = [news.date for news in object_list]
-    sorted_dates = sorted(all_dates, reverse=True)
 
-    assert all_dates == sorted_dates
+    assert all_dates == sorted(all_dates, reverse=True)
 
 
 @pytest.mark.django_db
@@ -64,16 +66,15 @@ def test_comments_order(client, news, author):
         comment.created = now + timedelta(days=index)
         comment.save()
 
-    url = reverse('news:detail', args=(news.id,))
+    url = reverse('news:detail', args=(news.pk,))
     response = client.get(url)
 
     news_obj = response.context['news']
     all_comments = news_obj.comment_set.all()
 
     all_timestamps = [comment.created for comment in all_comments]
-    sorted_timestamps = sorted(all_timestamps)
 
-    assert all_timestamps == sorted_timestamps
+    assert all_timestamps == sorted(all_timestamps)
 
 
 @pytest.mark.django_db
