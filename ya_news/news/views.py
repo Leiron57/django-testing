@@ -6,7 +6,6 @@ from django.views import generic
 
 from .forms import CommentForm
 from .models import Comment, News
-from django.urls import reverse_lazy
 
 
 class NewsList(generic.ListView):
@@ -15,14 +14,7 @@ class NewsList(generic.ListView):
     template_name = 'news/home.html'
 
     def get_queryset(self):
-        """
-        Выводим только несколько последних новостей.
-
-        Их количество определяется в настройках проекта.
-        """
-        return self.model.objects.prefetch_related(
-            'comment_set'
-        )[:settings.NEWS_COUNT_ON_HOME_PAGE]
+        return self.model.objects.prefetch_related('comment_set')[:settings.NEWS_COUNT_ON_HOME_PAGE]
 
 
 class NewsDetail(generic.DetailView):
@@ -30,11 +22,10 @@ class NewsDetail(generic.DetailView):
     template_name = 'news/detail.html'
 
     def get_object(self, queryset=None):
-        obj = get_object_or_404(
+        return get_object_or_404(
             self.model.objects.prefetch_related('comment_set__author'),
             pk=self.kwargs['pk']
         )
-        return obj
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -48,7 +39,7 @@ class NewsComment(
     LoginRequiredMixin,
     generic.detail.SingleObjectMixin,
     generic.FormView
-):
+    ):
     model = News
     form_class = CommentForm
     template_name = 'news/detail.html'
@@ -56,11 +47,6 @@ class NewsComment(
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         return super().post(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['news'] = self.object
-        return context
 
     def form_valid(self, form):
         comment = form.save(commit=False)
@@ -70,16 +56,18 @@ class NewsComment(
         return super().form_valid(form)
 
     def form_invalid(self, form):
-        context = self.get_context_data(form=form)
+        # Важно: передаём и объект новости, и форму
+        context = self.get_context_data(object=self.object, news=self.object, form=form)
         return self.render_to_response(context)
 
     def get_success_url(self):
-        return reverse(
-            'news:detail',
-            kwargs={'pk': self.object.pk}) + '#comments'
+        return reverse('news:detail', kwargs={'pk': self.object.pk}) + '#comments'
 
 
 class NewsDetailView(generic.View):
+    """
+    Объединяет GET (просмотр) и POST (создание комментария).
+    """
 
     def get(self, request, *args, **kwargs):
         view = NewsDetail.as_view()
@@ -87,16 +75,13 @@ class NewsDetailView(generic.View):
 
     def post(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
+            # Анонимный пользователь не может создать комментарий
             view = NewsDetail.as_view()
             return view(request, *args, **kwargs)
 
+        # Авторизованный пользователь: обрабатываем форму
         view = NewsComment.as_view()
         return view(request, *args, **kwargs)
-
-
-class CommentBase(LoginRequiredMixin):
-    """Базовый класс для работы с комментариями."""
-    model = Comment
 
     def get_success_url(self):
         comment = self.get_object()

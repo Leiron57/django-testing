@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+
 {% block content %}
   <a href="{% url 'news:home' %}">На главную</a>
   <hr>
@@ -6,10 +7,11 @@
   <p>{{ news.text }}</p>
   <p>{{ news.date }}</p>
   <hr>
+
   <h3 id="comments">Комментарии:</h3>
   {% for comment in news.comment_set.all %}
     <div>
-      <b>{{ comment.author }}</b>, {{ comment.created }}</b>
+      <b>{{ comment.author }}</b>, {{ comment.created }}
       <p class="mb-0">{{ comment.text|linebreaksbr }}</p>
       {% if comment.author == user %}
         <a href="{% url 'news:edit' comment.pk %}">Редактировать</a> |
@@ -20,18 +22,21 @@
   {% empty %}
     <p>Здесь никто ничего не написал...</p>
   {% endfor %}
+
   {% if user.is_authenticated %}
     <hr>
     <div class="col-md-3">
       <h3>Оставить комментарий:</h3>
-      <form action="" method="post">
+      <form method="post">
         {% csrf_token %}
-        {% include "includes/errors.html" %}
-        {% for field in form %}
-          {{ field }}
-        {% endfor %}
-        <div class="form-actions">
-          <button type="submit" class="btn btn-primary" >Сохранить</button>
+        <!-- Явно выводим поле text -->
+        {{ form.text }}
+        <!-- Если есть ошибка — покажем -->
+        {% if form.text.errors %}
+          <div class="text-danger">{{ form.text.errors }}</div>
+        {% endif %}
+        <div class="form-actions mt-2">
+          <button type="submit" class="btn btn-primary">Сохранить</button>
         </div>
       </form>
     </div>
