@@ -6,6 +6,7 @@ from django.urls import reverse
 from ya_news.news.forms import BAD_WORDS, WARNING
 from ya_news.news.models import Comment
 from pytest_django.asserts import assertFormError
+from django.test import Client
 
 
 @pytest.mark.django_db
@@ -34,26 +35,21 @@ def test_user_can_create_comment(author_client, news, author):
     assert comment.author == author
 
 
-@pytest.mark.parametrize('bad_word', BAD_WORDS)
-def test_user_cant_use_bad_words(author_client, news, bad_word):
-    url = reverse('news:detail', args=(news.pk,))
-    data = {'text': f'Какой-то текст, {bad_word}, еще текст'}
+@pytest.mark.parametrize('bad_word', BAD_WORDS, ids=lambda word: word)
+def test_user_cant_use_bad_words(
+    author_client: Client,
+    detail_url: str,
+    bad_word: str
+) -> None:
+    bad_words_data = {'text': f'Какой-то текст, {bad_word}, еще текст'}
 
-    response = author_client.post(url, data=data)
+    response = author_client.post(detail_url, data=bad_words_data)
 
-    # Диагностика: посмотрим, что вернулось
-    assert response.status_code == HTTPStatus.OK
-
-    # Убедимся, что форма в контексте
-    assert 'form' in response.context, "Форма отсутствует в контексте"
+    assert response.status_code == 200
 
     form = response.context['form']
-    assert form.is_bound, "Форма не привязана к данным (is_bound=False)"
-
-    # Проверяем ошибку
     assertFormError(form, 'text', WARNING)
 
-    # Комментарий не создан
     assert Comment.objects.count() == 0
 
 
