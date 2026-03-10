@@ -34,33 +34,21 @@ def test_user_can_create_comment(author_client, news, author):
     assert comment.author == author
 
 
-import pytest
-from django.test import Client
-
-# Предположим, что BAD_WORDS — это список плохих слов
-# BAD_WORDS = ['редиска', 'негодяй', ...]
-
-@pytest.mark.parametrize('bad_word', BAD_WORDS, ids=lambda word: word)
+@pytest.mark.parametrize('bad_words', BAD_WORDS)
 def test_user_cant_use_bad_words(
     author_client: Client,
     detail_url: str,
-    bad_word: str
+    bad_words
 ) -> None:
-    bad_words_data = {'text': f'Какой-то текст, {bad_word}, еще текст'}
-
-    # Отправляем POST‑запрос
+    bad_words_data = {'text': f'Какой-то текст, {bad_words}, еще текст'}
     response = author_client.post(detail_url, data=bad_words_data)
-
-    assert response.status_code == 200, f'Использование слова "{bad_word}"'
-
     form = response.context['form']
-
-    expected_error_message = 'Текст содержит запрещённые слова.'
-    assert expected_error_message in form.errors.get('text', []), \
-        f'Слово "{bad_word}". Ошибки формы: {form.errors}'
-
-    assert Comment.objects.count() == 0, \
-        f'Комментарий с запрещённым словом "{bad_word}" был сохранён в БД'
+    assertFormError(
+        form=form,
+        field='text',
+        errors=WARNING
+    )
+    assert Comment.objects.count() == 0
 
 
 @pytest.mark.django_db
