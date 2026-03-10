@@ -40,7 +40,7 @@ def test_user_cant_use_bad_words(author_client, news, bad_word):
 
     response = author_client.post(url, data=data)
 
-    # Ожидаем, что ответ содержит страницу с формой и ошибкой
+    # Ожидаем, что форма вернётся с ошибкой
     assert response.status_code == HTTPStatus.OK
     assertFormError(
         response.context['form'],
@@ -61,18 +61,14 @@ def test_author_can_edit_comment(author_client, news, author):
     data = {'text': 'Обновлённый комментарий'}
 
     response = author_client.post(edit_url, data=data)
-    assert response.status_code == HTTPStatus.OK
+    assert response.status_code == HTTPStatus.FOUND  # Обычно после редактирования — редирект
 
     comment.refresh_from_db()
     assert comment.text == data['text']
 
 
 @pytest.mark.django_db
-def test_user_cant_edit_comment_of_another_user(
-    not_author_client,
-    news,
-    author
-):
+def test_user_cant_edit_comment_of_another_user(not_author_client, news, author):
     comment = Comment.objects.create(
         news=news,
         author=author,
@@ -97,21 +93,17 @@ def test_author_can_delete_comment(author_client, news, author):
     )
 
     delete_url = reverse('news:delete', args=(comment.pk,))
-    url_to_comments = reverse('news:detail', args=(news.pk,)) + '#comments'
+    success_url = reverse('news:detail', args=(news.pk,)) + '#comments'
 
     response = author_client.post(delete_url)
 
     assert response.status_code == HTTPStatus.FOUND
-    assert response.url == url_to_comments
+    assert response.url == success_url
     assert Comment.objects.count() == 0
 
 
 @pytest.mark.django_db
-def test_user_cant_delete_comment_of_another_user(
-    not_author_client,
-    news,
-    author
-):
+def test_user_cant_delete_comment_of_another_user(not_author_client, news, author):
     comment = Comment.objects.create(
         news=news,
         author=author,
