@@ -5,7 +5,6 @@ from django.urls import reverse
 from news.forms import BAD_WORDS, WARNING
 from news.models import Comment
 from pytest_django.asserts import assertFormError
-from django.test import Client
 
 
 @pytest.mark.django_db
@@ -42,7 +41,7 @@ def test_user_cant_use_bad_words(author_client, news, bad_word):
     response = author_client.post(url, data=data)
 
     # Диагностика: посмотрим, что вернулось
-    assert response.status_code == HTTPStatus.OK, f"Получен статус {response.status_code}"
+    assert response.status_code == HTTPStatus.OK
 
     # Убедимся, что форма в контексте
     assert 'form' in response.context, "Форма отсутствует в контексте"
