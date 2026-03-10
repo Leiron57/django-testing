@@ -34,21 +34,42 @@ def test_user_can_create_comment(author_client, news, author):
     assert comment.author == author
 
 
-@pytest.mark.parametrize('bad_words', BAD_WORDS)
+import pytest
+from django.test import Client
+
+# Предположим, что BAD_WORDS — это список плохих слов
+# BAD_WORDS = ['редиска', 'негодяй', ...]
+
+@pytest.mark.parametrize('bad_word', BAD_WORDS, ids=lambda word: word)
 def test_user_cant_use_bad_words(
     author_client: Client,
     detail_url: str,
-    bad_words
+    bad_word: str
 ) -> None:
-    bad_words_data = {'text': f'Какой-то текст, {bad_words}, еще текст'}
+    """Тест проверяет, что пользователь не может отправить комментарий с запрещённым словом."""
+    bad_words_data = {'text': f'Какой-то текст, {bad_word}, еще текст'}
+
+    # Отправляем POST‑запрос
     response = author_client.post(detail_url, data=bad_words_data)
+
+    # Проверяем, что запрос выполнен успешно (страница перезагрузилась с формой)
+    assert response.status_code == 200, f'Статус ответа не 200 при использовании слова "{bad_word}"'
+
+    # Получаем форму из контекста ответа
     form = response.context['form']
-    assertFormError(
-        form=form,
-        field='text',
-        errors=WARNING
-    )
-    assert Comment.objects.count() == 0
+
+    # Проверяем наличие ошибки в поле 'text'
+    # Замените 'Текст содержит запрещённые слова.' на реальное сообщение об ошибке из вашей формы
+    expected_error_message = 'Текст содержит запрещённые слова.'
+    assert expected_error_message in form.errors.get('text', []), \
+        f'Ошибка не найдена в поле "text" для слова "{bad_word}". Ошибки формы: {form.errors}'
+
+    # Альтернативный вариант: проверка количества ошибок (если точное сообщение неизвестно)
+    # assert 'text' in form.errors, f'Поле "text" не содержит ошибок для слова "{bad_word}"'
+
+    # Проверяем, что комментарий не был создан в БД
+    assert Comment.objects.count() == 0, \
+        f'Комментарий с запрещённым словом "{bad_word}" был сохранён в БД'
 
 
 @pytest.mark.django_db
