@@ -2,9 +2,8 @@ import pytest
 from http import HTTPStatus
 from django.urls import reverse
 
-
-from ya_news.news.forms import BAD_WORDS, WARNING
-from ya_news.news.models import Comment
+from news.forms import BAD_WORDS, WARNING
+from news.models import Comment
 from pytest_django.asserts import assertFormError
 from django.test import Client
 
@@ -35,21 +34,21 @@ def test_user_can_create_comment(author_client, news, author):
     assert comment.author == author
 
 
-@pytest.mark.parametrize('bad_word', BAD_WORDS, ids=lambda word: word)
-def test_user_cant_use_bad_words(
-    author_client: Client,
-    detail_url: str,
-    bad_word: str
-) -> None:
-    bad_words_data = {'text': f'Какой-то текст, {bad_word}, еще текст'}
+import pytest
+from django.test import Client
+from pytest_django.asserts import assert_form_error
+from news.models import Comment
 
+@pytest.mark.parametrize('bad_words', BAD_WORDS)
+def test_user_cant_use_bad_words(author_client: Client, detail_url: str, bad_words) -> None:
+    bad_words_data = {'text': f'Какой-то текст, {bad_words}, еще текст'}
     response = author_client.post(detail_url, data=bad_words_data)
-
-    assert response.status_code == 200
-
     form = response.context['form']
-    assertFormError(form, 'text', WARNING)
-
+    assertFormError(
+        form=form,
+        field='text',
+        errors=WARNING
+    )
     assert Comment.objects.count() == 0
 
 
@@ -64,7 +63,7 @@ def test_author_can_edit_comment(author_client, news, author):
     data = {'text': 'Обновлённый комментарий'}
 
     response = author_client.post(edit_url, data=data)
-    assert response.status_code == HTTPStatus.FOUND
+    assert response.status_code == HTTPStatus.OK
 
     comment.refresh_from_db()
     assert comment.text == data['text']
@@ -73,7 +72,8 @@ def test_author_can_edit_comment(author_client, news, author):
 @pytest.mark.django_db
 def test_user_cant_edit_comment_of_another_user(
     not_author_client,
-    news, author
+    news,
+    author
 ):
     comment = Comment.objects.create(
         news=news,
@@ -99,12 +99,12 @@ def test_author_can_delete_comment(author_client, news, author):
     )
 
     delete_url = reverse('news:delete', args=(comment.pk,))
-    success_url = reverse('news:detail', args=(news.pk,)) + '#comments'
+    url_to_comments = reverse('news:detail', args=(news.pk,)) + '#comments'
 
     response = author_client.post(delete_url)
 
     assert response.status_code == HTTPStatus.FOUND
-    assert response.url == success_url
+    assert response.url == url_to_comments
     assert Comment.objects.count() == 0
 
 

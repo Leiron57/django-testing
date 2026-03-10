@@ -10,7 +10,6 @@ from .models import Comment, News
 
 
 class NewsList(generic.ListView):
-    """Список новостей."""
     model = News
     template_name = 'news/home.html'
 
@@ -57,15 +56,12 @@ class NewsComment(LoginRequiredMixin, generic.detail.SingleObjectMixin, generic.
         return super().form_valid(form)
 
     def get_success_url(self):
-        # Гарантированно используем self.object
         if not self.object:
             return reverse('news:home') + '#comments'
         return reverse('news:detail', kwargs={'pk': self.object.pk}) + '#comments'
 
 
 class NewsDetailView(generic.View):
-    """Объединяет GET (просмотр) и POST (создание комментария)."""
-
     def get(self, request, *args, **kwargs):
         view = NewsDetail.as_view()
         return view(request, *args, **kwargs)
@@ -90,7 +86,6 @@ class CommentBase(LoginRequiredMixin):
 
 
 class CommentUpdate(CommentBase, generic.UpdateView):
-    """Редактирование комментария."""
     template_name = 'news/edit.html'
     form_class = CommentForm
     model = Comment
@@ -103,5 +98,4 @@ class CommentUpdate(CommentBase, generic.UpdateView):
 
 
 class CommentDelete(CommentBase, generic.DeleteView):
-    """Удаление комментария."""
     template_name = 'news/delete.html'
