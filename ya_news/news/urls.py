@@ -5,7 +5,11 @@ from news import views
 app_name = 'news'
 
 urlpatterns = [
-    path('', views.NewsList.as_view(), name='home'),
+    path(
+        '', 
+        views.NewsList.as_view(), 
+        name='home'
+    ),
     path(
         'news/<int:pk>/',
         views.NewsDetailView.as_view(),

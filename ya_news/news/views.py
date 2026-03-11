@@ -39,10 +39,11 @@ class NewsDetail(generic.DetailView):
         return context
 
 
-class NewsComment(LoginRequiredMixin,
-                generic.detail.SingleObjectMixin,
-                generic.FormView
-    ):
+class NewsComment(
+    LoginRequiredMixin,
+    generic.detail.SingleObjectMixin,
+    generic.FormView
+):
     model = News
     form_class = CommentForm
     template_name = 'news/detail.html'
@@ -62,8 +63,9 @@ class NewsComment(LoginRequiredMixin,
         if not self.object:
             return reverse('news:home') + '#comments'
         return reverse(
-            'news:detail', 
-            kwargs={'pk': self.object.pk}) + '#comments'
+            'news:detail',
+            kwargs={'pk': self.object.pk}
+        ) + '#comments'
 
 
 class NewsDetailView(generic.View):
