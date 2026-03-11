@@ -7,8 +7,8 @@ app_name = 'news'
 urlpatterns = [
     path('', views.NewsList.as_view(), name='home'),
     path(
-        'news/<int:pk>/', 
-        views.NewsDetailView.as_view(), 
+        'news/<int:pk>/',
+        views.NewsDetailView.as_view(),
         name='detail'
     ),
     path(
