@@ -6,7 +6,11 @@ app_name = 'news'
 
 urlpatterns = [
     path('', views.NewsList.as_view(), name='home'),
-    path('news/<int:pk>/', views.NewsDetailView.as_view(), name='detail'),
+    path(
+        'news/<int:pk>/', 
+        views.NewsDetailView.as_view(), 
+        name='detail'
+    ),
     path(
         'news/<int:pk>/comment/',
         views.NewsComment.as_view(),
