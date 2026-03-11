@@ -39,7 +39,9 @@ class NewsDetail(generic.DetailView):
         return context
 
 
-class NewsComment(LoginRequiredMixin, generic.detail.SingleObjectMixin, generic.FormView):
+class NewsComment(LoginRequiredMixin, 
+                generic.detail.SingleObjectMixin, 
+                generic.FormView):
     model = News
     form_class = CommentForm
     template_name = 'news/detail.html'
