@@ -6,8 +6,8 @@ app_name = 'news'
 
 urlpatterns = [
     path(
-        '', 
-        views.NewsList.as_view(), 
+        '',
+        views.NewsList.as_view(),
         name='home'
     ),
     path(
@@ -18,7 +18,8 @@ urlpatterns = [
     path(
         'news/<int:pk>/comment/',
         views.NewsComment.as_view(),
-        name='comment'),
+        name='comment'
+    ),
     path(
         'delete_comment/<int:pk>/',
         views.CommentDelete.as_view(),
@@ -27,5 +28,6 @@ urlpatterns = [
     path(
         'edit_comment/<int:pk>/',
         views.CommentUpdate.as_view(),
-        name='edit'),
+        name='edit'
+    ),
 ]
