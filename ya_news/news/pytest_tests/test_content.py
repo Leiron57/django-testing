@@ -1,31 +1,29 @@
 import pytest
 from datetime import timedelta
-
-from django.conf import settings
 from django.urls import reverse
 from django.utils import timezone
 
-from news.models import News, Comment
-from news.forms import CommentForm
+from django.conf import settings
+from ya_news.news.models import News, Comment
+from ya_news.news.forms import CommentForm
 
 
 @pytest.mark.django_db
-def test_news_count(client):
+def test_news_count(client, settings):
     today = timezone.now()
     news_count = settings.NEWS_COUNT_ON_HOME_PAGE + 1
 
     News.objects.bulk_create([
         News(
-            title=f'Новость {index}',
+            title=f'Новость {i}',
             text='Просто текст',
-            date=today - timedelta(days=index)
+            date=today - timedelta(days=i)
         )
-        for index in range(news_count)
+        for i in range(news_count)
     ])
 
     url = reverse('news:home')
     response = client.get(url)
-
     object_list = response.context['object_list']
 
     assert len(object_list) == settings.NEWS_COUNT_ON_HOME_PAGE
