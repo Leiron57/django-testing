@@ -63,11 +63,13 @@ def test_author_can_edit_comment(author_client, news, author):
         author=author,
         text='Текст комментария'
     )
+
     edit_url = reverse('news:edit', args=(comment.pk,))
     data = {'text': 'Обновлённый комментарий'}
 
     response = author_client.post(edit_url, data=data)
-    assert response.status_code == HTTPStatus.OK
+
+    assert response.status_code == HTTPStatus.FOUND
 
     comment.refresh_from_db()
     assert comment.text == data['text']

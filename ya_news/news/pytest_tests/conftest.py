@@ -2,6 +2,7 @@ import pytest
 from django.test import Client
 
 from news.models import News, Comment
+from django.urls import reverse
 
 
 @pytest.fixture
@@ -43,3 +44,7 @@ def comment(author, news):
         author=author,
         text='Текст комментария'
     )
+
+@pytest.fixture
+def detail_url(news):
+    return reverse('news:detail', args=(news.pk,))

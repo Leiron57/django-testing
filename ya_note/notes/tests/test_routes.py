@@ -28,7 +28,7 @@ class TestRoutes(TestCase):
         cls.anonymous_client = Client()
 
     def test_home_page_available_for_anonymous(self):
-        url = reverse('news:home')
+        url = reverse('notes:home')
         response = self.anonymous_client.get(url)
         self.assertEqual(response.status_code, HTTPStatus.OK)
 

@@ -49,20 +49,29 @@ class TestNoteLogic(TestCase):
             slug='unique-slug',
             author=self.author
         )
+
         url = reverse('notes:add')
-        data = {'title': 'Другая заметка',
-                'text': 'Текст',
-                'slug': 'unique-slug'}
-        response = self.client_author.post(url, data=data, follow=True)
-        self.assertFormError(response, 'form', 'slug')
+        data = {
+            'title': 'Другая заметка',
+            'text': 'Текст',
+            'slug': 'unique-slug'
+        }
+
+        response = self.client_author.post(url, data=data)
+
+        form = response.context['form']
+        self.assertFormError(form, 'slug', 'Заметка с таким slug уже существует.')
 
     def test_slug_generated_if_not_provided(self):
         url = reverse('notes:add')
         data = {'title': 'Тестовая заметка', 'text': 'Текст'}
         response = self.client_author.post(url, data=data)
+
         self.assertEqual(response.status_code, HTTPStatus.FOUND)
+
         note = Note.objects.get(title='Тестовая заметка')
         expected_slug = slugify('Тестовая заметка')
+
         self.assertEqual(note.slug, expected_slug)
 
     def test_user_can_edit_and_delete_own_note(self):
