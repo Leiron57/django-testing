@@ -3,7 +3,6 @@ from datetime import timedelta
 from django.urls import reverse
 from django.utils import timezone
 
-from django.conf import settings
 from ya_news.news.models import News, Comment
 from ya_news.news.forms import CommentForm
 
@@ -15,17 +14,16 @@ def test_news_count(client, settings):
 
     News.objects.bulk_create([
         News(
-            title=f'Новость {i}',
+            title=f'Новость {index}',
             text='Просто текст',
-            date=today - timedelta(days=i)
+            date=today - timedelta(days=index)
         )
-        for i in range(news_count)
+        for index in range(news_count)
     ])
 
     url = reverse('news:home')
     response = client.get(url)
     object_list = response.context['object_list']
-
     assert len(object_list) == settings.NEWS_COUNT_ON_HOME_PAGE
 
 
