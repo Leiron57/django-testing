@@ -60,7 +60,11 @@ class TestNoteLogic(TestCase):
         response = self.client_author.post(url, data=data)
 
         form = response.context['form']
-        self.assertFormError(form, 'slug', 'Заметка с таким slug уже существует.')
+        self.assertFormError(
+            form, 
+            'slug', 
+            'Заметка с таким slug уже существует.'
+        )
 
     def test_slug_generated_if_not_provided(self):
         url = reverse('notes:add')

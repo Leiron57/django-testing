@@ -45,6 +45,7 @@ def comment(author, news):
         text='Текст комментария'
     )
 
+
 @pytest.fixture
 def detail_url(news):
     return reverse('news:detail', args=(news.pk,))
