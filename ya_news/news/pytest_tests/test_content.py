@@ -1,4 +1,5 @@
 import pytest
+from django.conf import settings
 from datetime import timedelta
 from django.urls import reverse
 from django.utils import timezone
