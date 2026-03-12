@@ -61,8 +61,8 @@ class TestNoteLogic(TestCase):
 
         form = response.context['form']
         self.assertFormError(
-            form, 
-            'slug', 
+            form,
+            'slug',
             'Заметка с таким slug уже существует.'
         )
 
