@@ -8,7 +8,7 @@ from django.urls import reverse
     'name',
     ('news:home', 'news:detail', 'users:login', 'users:signup', 'users:logout')
 )
-def test_pages_availability_for_anonymous_user(client, name, news):
+def test_pages_availability_for_anonymous_user(client, name, news, db):
     args = (news.pk,) if name == 'news:detail' else None
     url = reverse(name, args=args)
 
