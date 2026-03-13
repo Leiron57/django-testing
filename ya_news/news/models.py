@@ -13,7 +13,7 @@ class News(models.Model):
         ordering = ('-date',)
         verbose_name_plural = 'Новости'
         verbose_name = 'Новость'
-        app_label = 'ya_news.news'
+        app_label = 'news'
 
     def __str__(self):
         return self.title
@@ -35,7 +35,7 @@ class Comment(models.Model):
         ordering = ('created',)
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
-        app_label = 'ya_news.news'
+        app_label = 'news'
 
     def __str__(self):
         return self.text[:50]
