@@ -1,7 +1,7 @@
 import pytest
 from django.test import Client
 
-from ya_news.news.models import News, Comment
+from news.models import News, Comment
 from django.urls import reverse
 
 

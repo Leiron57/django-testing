@@ -1,120 +1,41 @@
-import pytest
-from http import HTTPStatus
-from django.urls import reverse
+import sys
+from collections import namedtuple
+from pathlib import Path
 
-from news.forms import BAD_WORDS, WARNING
-from news.models import Comment
+BASE_DIR = Path(__file__).resolve().parent
+sys.path.append(BASE_DIR)
 
+PathForTests = namedtuple('TestPaths', ('rel_path', 'abs_path'))
 
-@pytest.mark.django_db
-def test_anonymous_user_cant_create_comment(client, news):
-    url = reverse('news:detail', args=(news.pk,))
-    data = {'text': 'Текст комментария'}
+ya_note_tests = BASE_DIR / 'ya_note/notes/tests/'
+ya_news_tests = BASE_DIR / 'ya_news/news/pytest_tests/'
 
-    client.post(url, data=data)
-    assert Comment.objects.count() == 0
+message_template = (
+    '\nНе обнаружены тесты для проекта `{project}`. Убедитесь, что тесты, '
+    'которые вы написали, размещены в директории `{path}`.'
+)
 
-
-@pytest.mark.django_db
-def test_user_can_create_comment(author_client, news, author):
-    url = reverse('news:comment', args=(news.pk,))
-    data = {'text': 'Текст комментария'}
-
-    response = author_client.post(url, data=data)
-    assert response.status_code == HTTPStatus.FOUND
-    assert response.url == f'{url}#comments'
-
-    comment = Comment.objects.get()
-    assert comment.text == data['text']
-    assert comment.news == news
-    assert comment.author == author
-
-
-@pytest.mark.django_db
-def test_user_cant_use_bad_words(author_client, news):
-    url = reverse('news:comment', args=(news.pk,))
-    data = {'text': f'Текст с запрещённым словом: {BAD_WORDS[0]}'}
-
-    response = author_client.post(url, data=data)
-    form = response.context['form']
-
-    assert form.errors['text'] == [WARNING]
-    assert Comment.objects.count() == 0
-
-
-@pytest.mark.django_db
-def test_author_can_edit_comment(author_client, news, author):
-    comment = Comment.objects.create(
-        news=news,
-        author=author,
-        text='Текст комментария'
+projects_map = {
+    'ya_note': PathForTests(
+        'django_testing/ya_note/notes/tests', ya_note_tests
+    ),
+    'ya_news': PathForTests(
+        'django_testing/ya_news/news/pytest_tests', ya_news_tests
     )
-    edit_url = reverse('news:edit', args=(comment.pk,))
-    data = {'text': 'Обновлённый комментарий'}
+}
 
-    response = author_client.post(edit_url, data=data)
-    assert response.status_code == HTTPStatus.FOUND
-
-    url_to_comments = reverse('news:detail', args=(news.pk,)) + '#comments'
-    assert response.url == url_to_comments
-
-    comment.refresh_from_db()
-    assert comment.text == data['text']
-
-
-@pytest.mark.django_db
-def test_user_cant_edit_comment_of_another_user(
-    not_author_client,
-    news,
-    author
-):
-    comment = Comment.objects.create(
-        news=news,
-        author=author,
-        text='Текст комментария'
-    )
-    edit_url = reverse('news:edit', args=(comment.pk,))
-    data = {'text': 'Попытка изменить чужой комментарий'}
-
-    response = not_author_client.post(edit_url, data=data)
-    assert response.status_code == HTTPStatus.NOT_FOUND
-
-    comment.refresh_from_db()
-    assert comment.text == 'Текст комментария'
+errors = []
+for project_name, path in projects_map.items():
+    if not path.abs_path.is_dir():
+        errors.append(message_template.format(
+            project=project_name, path=path.rel_path
+        ))
+        continue
+    path_content = [obj for obj in path.abs_path.glob('*.py') if obj.is_file()]
+    if not path_content:
+        errors.append(message_template.format(
+            project=project_name, path=path.rel_path
+        ))
 
 
-@pytest.mark.django_db
-def test_author_can_delete_comment(author_client, news, author):
-    comment = Comment.objects.create(
-        news=news,
-        author=author,
-        text='Текст комментария'
-    )
-    delete_url = reverse('news:delete', args=(comment.pk,))
-    url_to_comments = reverse(
-        'news:detail',
-        args=(news.pk,)) + '#comments'
-
-    response = author_client.post(delete_url)
-    assert response.status_code == HTTPStatus.FOUND
-    assert response.url == url_to_comments
-
-    assert Comment.objects.count() == 0
-
-
-@pytest.mark.django_db
-def test_user_cant_delete_comment_of_another_user(
-    not_author_client,
-    news,
-    author
-):
-    comment = Comment.objects.create(
-        news=news,
-        author=author,
-        text='Текст комментария'
-    )
-    delete_url = reverse('news:delete', args=(comment.pk,))
-
-    response = not_author_client.post(delete_url)
-    assert response.status_code == HTTPStatus.NOT_FOUND
-    assert Comment.objects.count() == 1
+assert not errors, ''.join(errors)

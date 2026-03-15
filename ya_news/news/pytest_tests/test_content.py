@@ -4,8 +4,8 @@ from datetime import timedelta
 from django.urls import reverse
 from django.utils import timezone
 
-from ya_news.news.models import News, Comment
-from ya_news.news.forms import CommentForm
+from news.models import News, Comment
+from news.forms import CommentForm
 
 
 @pytest.mark.django_db
