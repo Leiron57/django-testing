@@ -1,8 +1,11 @@
+from pytils.translit import slugify
+
 from django import forms
 from django.core.exceptions import ValidationError
-from django.utils.text import slugify
 
 from .models import Note
+
+WARNING = ' - такой slug уже существует, придумайте уникальное значение!'
 
 
 class NoteForm(forms.ModelForm):
@@ -12,18 +15,16 @@ class NoteForm(forms.ModelForm):
         model = Note
         fields = ('title', 'text', 'slug')
 
-    def clean(self):
-        cleaned_data = super().clean()
-        slug = cleaned_data.get('slug')
-        title = cleaned_data.get('title')
+    def clean_slug(self):
+        slug = self.cleaned_data.get('slug')
+        title = self.cleaned_data.get('title')
 
         if not slug:
             slug = slugify(title)
-            cleaned_data['slug'] = slug
 
         if Note.objects.filter(
             slug=slug
         ).exclude(pk=self.instance.pk).exists():
-            self.add_error('slug', 'Заметка с таким slug уже существует.')
+            raise ValidationError('Заметка с таким slug уже существует.')
 
-        return cleaned_data
+        return slug
