@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views import generic
 from django.shortcuts import redirect
+from django.views.generic import DetailView
 
 
 from .forms import CommentForm
