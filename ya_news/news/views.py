@@ -3,9 +3,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views import generic
-from django.shortcuts import redirect
-from django.views.generic import DetailView
-
 
 from .forms import CommentForm
 from .models import Comment, News
@@ -70,37 +67,15 @@ class NewsComment(
         return reverse('news:detail', kwargs={'pk': post.pk}) + '#comments'
 
 
-class NewsDetailView(DetailView):
-    model = News
-    template_name = 'news/detail.html'
+class NewsDetailView(generic.View):
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['form'] = CommentForm()
-        context['comments'] = Comment.objects.filter(news=self.object)
-        return context
+    def get(self, request, *args, **kwargs):
+        view = NewsDetail.as_view()
+        return view(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-
-        if not request.user.is_authenticated:
-            return redirect('users:login')
-
-        form = CommentForm(request.POST)
-
-        if form.is_valid():
-            Comment.objects.create(
-                news=self.object,
-                author=request.user,
-                text=form.cleaned_data['text']
-            )
-            return redirect(
-                reverse('news:detail', args=(self.object.pk,)) + '#comments'
-            )
-
-        context = self.get_context_data()
-        context['form'] = form
-        return self.render_to_response(context)
+        view = NewsComment.as_view()
+        return view(request, *args, **kwargs)
 
 
 class CommentBase(LoginRequiredMixin):
