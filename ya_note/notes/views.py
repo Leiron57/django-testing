@@ -27,14 +27,20 @@ class NoteBase(LoginRequiredMixin):
 
 
 class NoteCreate(NoteBase, generic.CreateView):
-    """Добавление заметки."""
     template_name = 'notes/form.html'
     form_class = NoteForm
 
     def form_valid(self, form):
-        new_note = form.save(commit=False)
-        new_note.author = self.request.user
-        new_note.save()
+        note = form.save(commit=False)
+        note.author = self.request.user
+
+        # Генерация slug через pytils, если пустой
+        if not note.slug:
+            from pytils.translit import slugify as py_slugify
+            max_length = note._meta.get_field('slug').max_length
+            note.slug = py_slugify(note.title)[:max_length]
+
+        note.save()
         return super().form_valid(form)
 
 

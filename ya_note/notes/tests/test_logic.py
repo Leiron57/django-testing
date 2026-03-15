@@ -3,7 +3,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from notes.models import Note
-from django.utils.text import slugify
+from pytils.translit import slugify
 
 
 User = get_user_model()
