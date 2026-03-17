@@ -38,7 +38,7 @@ def test_user_can_create_comment(author_client, news, author):
 def test_user_cant_use_bad_words(
     author_client: Client,
     detail_url: str,
-    bad_words
+    bad_words: str
 ) -> None:
     bad_words_data = {
         'text': f'Какой-то текст, {bad_words}, еще текст'
