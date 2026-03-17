@@ -2,12 +2,10 @@ import pytest
 from http import HTTPStatus
 from django.urls import reverse
 
-from constant import WARNING, BAD_WORDS
+from news.forms import WARNING, BAD_WORDS
 from news.models import Comment
 from pytest_django.asserts import assertFormError
-
-
-BAD_WORDS_FORM_LIST = [{'text': word} for word in BAD_WORDS]
+from django.test import Client
 
 
 @pytest.mark.django_db
@@ -36,11 +34,16 @@ def test_user_can_create_comment(author_client, news, author):
     assert comment.author == author
 
 
-@pytest.mark.parametrize('form_data', BAD_WORDS_FORM_LIST)
-def test_user_cant_use_bad_words(author_client, detail_url, form_data):
-    """Пользователи не могут публиковать комментарии с плохими словами."""
-    response = author_client.post(detail_url, data=form_data)
-    assertFormError(response.context['form'], 'text', WARNING)
+@pytest.mark.parametrize('bad_words', BAD_WORDS)
+def test_user_cant_use_bad_words(author_client: Client, detail_url: str, bad_words) -> None:
+    bad_words_data = {'text': f'Какой-то текст, {bad_words}, еще текст'}
+    response = author_client.post(detail_url, data=bad_words_data)
+    form = response.context['form']
+    assertFormError(
+        form=form,
+        field='text',
+        errors=WARNING
+    )
     assert Comment.objects.count() == 0
 
 
