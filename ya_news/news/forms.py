@@ -10,6 +10,7 @@ BAD_WORDS = (
     # Дополните список на своё усмотрение.
 )
 
+
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
