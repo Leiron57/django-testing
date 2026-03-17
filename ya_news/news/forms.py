@@ -2,13 +2,13 @@ from django import forms
 from .models import Comment
 import re
 
+WARNING = 'Не ругайтесь!'
+
 BAD_WORDS = (
     'редиска',
     'негодяй',
     # Дополните список на своё усмотрение.
 )
-WARNING = 'Не ругайтесь!'
-
 
 class CommentForm(forms.ModelForm):
     class Meta:

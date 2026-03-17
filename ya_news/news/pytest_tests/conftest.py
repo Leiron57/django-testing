@@ -4,6 +4,14 @@ from django.test import Client
 from news.models import News, Comment
 from django.urls import reverse
 
+WARNING = 'Не ругайтесь!'
+
+BAD_WORDS = (
+    'редиска',
+    'негодяй',
+    # Дополните список на своё усмотрение.
+)
+
 
 @pytest.fixture
 def author(django_user_model):
