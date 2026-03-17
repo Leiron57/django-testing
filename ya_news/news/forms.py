@@ -3,6 +3,7 @@ from .models import Comment
 import re
 from constant import WARNING, BAD_WORDS
 
+
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
