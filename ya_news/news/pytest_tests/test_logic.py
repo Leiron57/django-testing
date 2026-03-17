@@ -2,7 +2,7 @@ import pytest
 from http import HTTPStatus
 from django.urls import reverse
 
-from news.forms import WARNING, BAD_WORDS
+from constant import WARNING, BAD_WORDS
 from news.models import Comment
 from pytest_django.asserts import assertFormError
 from django.test import Client
