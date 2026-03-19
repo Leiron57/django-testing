@@ -30,7 +30,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'ya_news.yanews.urls'
+ROOT_URLCONF = 'yanews.urls' 
+WSGI_APPLICATION = 'yanews.wsgi.application'
 
 TEMPLATES = [
     {
