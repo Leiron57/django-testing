@@ -1,3 +1,5 @@
+from django.urls import reverse
+
 WARNING = 'Не ругайтесь!'
 
 BAD_WORDS = (
@@ -5,3 +7,5 @@ BAD_WORDS = (
     'негодяй',
     # Дополните список на своё усмотрение.
 )
+
+HOME_URL = reverse('news:home')

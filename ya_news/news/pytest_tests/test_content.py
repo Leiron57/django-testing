@@ -1,77 +1,36 @@
-import pytest
-from django.conf import settings
-from datetime import timedelta
 from django.urls import reverse
-from django.utils import timezone
+from constant import HOME_URL
 
-from news.models import News, Comment
+import pytest
+
 from news.forms import CommentForm
 
 
 @pytest.mark.django_db
-def test_news_count(client, settings):
-    today = timezone.now()
-    news_count = settings.NEWS_COUNT_ON_HOME_PAGE + 1
-
-    News.objects.bulk_create([
-        News(
-            title=f'Новость {index}',
-            text='Просто текст',
-            date=today - timedelta(days=index)
-        )
-        for index in range(news_count)
-    ])
-
-    url = reverse('news:home')
-    response = client.get(url)
+def test_news_count(client, create_test_news, settings):
+    response = client.get(HOME_URL)
     object_list = response.context['object_list']
     assert len(object_list) == settings.NEWS_COUNT_ON_HOME_PAGE
 
 
 @pytest.mark.django_db
-def test_news_order(client):
-    today = timezone.now()
-
-    News.objects.bulk_create([
-        News(
-            title=f'Новость {index}',
-            text='Просто текст',
-            date=today - timedelta(days=index)
-        )
-        for index in range(settings.NEWS_COUNT_ON_HOME_PAGE + 1)
-    ])
-
-    url = reverse('news:home')
-    response = client.get(url)
-
+def test_news_order(client, create_test_news):
+    response = client.get(HOME_URL)
     object_list = response.context['object_list']
     all_dates = [news.date for news in object_list]
-
     assert all_dates == sorted(all_dates, reverse=True)
 
 
 @pytest.mark.django_db
-def test_comments_order(client, news, author):
-    now = timezone.now()
-
-    for index in range(10):
-        comment = Comment.objects.create(
-            news=news,
-            author=author,
-            text=f'Текст {index}',
-        )
-        comment.created = now + timedelta(days=index)
-        comment.save()
-
+def test_comments_order(client, news, create_testcomments):
     url = reverse('news:detail', args=(news.pk,))
     response = client.get(url)
 
     news_obj = response.context['news']
-    all_comments = news_obj.comment_set.all()
-
+    all_comments = news_obj.comment_set.order_by('created').all()
     all_timestamps = [comment.created for comment in all_comments]
 
-    assert all_timestamps == sorted(all_timestamps)
+    assert all_timestamps == sorted(all_timestamps, reverse=False)
 
 
 @pytest.mark.django_db

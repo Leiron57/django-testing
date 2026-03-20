@@ -1,23 +1,42 @@
-import pytest
 from http import HTTPStatus
+
 from django.urls import reverse
+
+import pytest
 
 
 @pytest.mark.django_db
 @pytest.mark.parametrize(
-    'name',
-    ('news:home', 'news:detail', 'users:login', 'users:signup', 'users:logout')
+    'name, args',
+    (
+        ('news:home', None),
+        ('users:login', None),
+        ('users:signup', None),
+    )
 )
-def test_pages_availability_for_anonymous_user(client, name, news):
-    args = (news.pk,) if name == 'news:detail' else None
+
+def test_pages_available_for_anonymous_user_get(client, name, args):
     url = reverse(name, args=args)
 
-    if name == 'users:logout':
-        response = client.post(url)
-        assert response.status_code == HTTPStatus.FOUND
-    else:
-        response = client.get(url)
-        assert response.status_code == HTTPStatus.OK
+    response = client.get(url)
+
+    assert response.status_code == HTTPStatus.OK
+
+@pytest.mark.django_db
+def test_news_detail_page_available_for_anonymous_user(client, news):
+    url = reverse('news:detail', args=(news.pk,))
+
+    response = client.get(url)
+
+    assert response.status_code == HTTPStatus.OK
+
+@pytest.mark.django_db
+def test_logout_page_available_for_anonymous_user(client, news):
+    url = reverse('users:logout')
+
+    response = client.post(url)
+
+    assert response.status_code == HTTPStatus.FOUND
 
 
 @pytest.mark.django_db

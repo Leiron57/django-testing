@@ -1,8 +1,11 @@
-import pytest
 from django.test import Client
+from django.urls import reverse
+from datetime import timedelta
+from django.utils import timezone
+
+import pytest
 
 from news.models import News, Comment
-from django.urls import reverse
 
 
 @pytest.fixture
@@ -49,3 +52,41 @@ def comment(author, news):
 @pytest.fixture
 def detail_url(news):
     return reverse('news:detail', args=(news.pk,))
+
+
+@pytest.fixture
+def news_count(settings):
+    """Возвращает количество новостей для тестирования (на 1 больше лимита)."""
+    return settings.NEWS_COUNT_ON_HOME_PAGE + 1
+
+
+@pytest.fixture
+def create_test_news(news_count):
+    """Создаёт набор тестовых новостей с разными датами."""
+    today = timezone.now()
+    news_objects = [
+        News(
+            title=f'Новость {index}',
+            text='Просто текст',
+            date=today - timedelta(days=index)
+        )
+        for index in range(news_count)
+    ]
+    News.objects.bulk_create(news_objects)
+    return News.objects.all()
+
+
+@pytest.fixture
+def create_testcomments(news, author):
+    """Создаёт набор тестовых комментариев с разными датами создания."""
+    now = timezone.now()
+    comments = []
+    for index in range(10):
+        comment = Comment.objects.create(
+            news=news,
+            author=author,
+            text=f'Текст {index}',
+            created=now + timedelta(days=index)
+        )
+        comments.append(comment)
+    return comments
