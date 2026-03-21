@@ -6,6 +6,7 @@ from yanote.common import BaseNotesTestSetup
 
 User = get_user_model()
 
+
 class TestRoutes(BaseNotesTestSetup):
     def test_home_page_available_for_anonymous(self):
         response = self.anonymous_client.get(self.NOTES_HOME_URL)
@@ -26,12 +27,18 @@ class TestRoutes(BaseNotesTestSetup):
     def test_anonymous_redirects_to_login_for_list(self):
         login_url = self.USERS_LOGIN_URL
         response = self.anonymous_client.get(self.NOTES_LIST_URL)
-        self.assertRedirects(response, f'{login_url}?next={self.NOTES_LIST_URL}')
+        self.assertRedirects(
+            response,
+            f'{login_url}?next={self.NOTES_LIST_URL}'
+        )
 
     def test_anonymous_redirects_to_login_for_add(self):
         login_url = self.USERS_LOGIN_URL
         response = self.anonymous_client.get(self.NOTES_ADD_URL)
-        self.assertRedirects(response, f'{login_url}?next={self.NOTES_ADD_URL}')
+        self.assertRedirects(
+            response,
+            f'{login_url}?next={self.NOTES_ADD_URL}'
+        )
 
     def test_anonymous_redirects_to_login_for_detail(self):
         url = reverse('notes:detail', args=(self.note1.slug,))

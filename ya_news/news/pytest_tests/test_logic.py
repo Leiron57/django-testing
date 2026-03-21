@@ -24,7 +24,7 @@ def test_user_can_create_comment(author_client, news, author):
     url = reverse('news:comment', args=(news.pk,))
     data = {'text': 'Текст комментария'}
     expected_redirect_url = reverse(
-        'news:detail', 
+        'news:detail',
         args=(news.pk,)
     ) + '#comments'
 
