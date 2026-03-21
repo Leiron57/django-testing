@@ -14,9 +14,6 @@ import pytest
         ('users:signup', None),
     )
 )
-
-
-@pytest.mark.django_db
 def test_pages_available_for_anonymous_user_get(client, name, args):
     url = reverse(name, args=args)
 

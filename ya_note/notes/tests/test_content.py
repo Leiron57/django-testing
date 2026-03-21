@@ -1,5 +1,3 @@
-from django.urls import reverse
-
 from yanote.common import BaseNotesTestSetup
 
 from notes.forms import NoteForm
