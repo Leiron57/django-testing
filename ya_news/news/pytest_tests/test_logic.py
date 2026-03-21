@@ -23,7 +23,10 @@ def test_anonymous_user_cant_create_comment(client, news):
 def test_user_can_create_comment(author_client, news, author):
     url = reverse('news:comment', args=(news.pk,))
     data = {'text': 'Текст комментария'}
-    expected_redirect_url = reverse('news:detail', args=(news.pk,)) + '#comments'
+    expected_redirect_url = reverse(
+        'news:detail', 
+        args=(news.pk,)
+    ) + '#comments'
 
     response = author_client.post(url, data=data)
 
@@ -74,7 +77,7 @@ def test_user_cant_edit_comment_of_another_user(
     not_author_client,
     comment
 ):
-    
+
     edit_url = reverse('news:edit', args=(comment.pk,))
     data = {'text': 'Попытка изменить чужой комментарий'}
 

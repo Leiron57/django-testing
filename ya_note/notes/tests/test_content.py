@@ -30,7 +30,6 @@ class TestNotesContent(BaseNotesTestSetup):
 
     def test_note_form_in_create(self):
 
-        url_add = reverse('notes:add')
         response_add = self.client_user1.get(self.NOTES_ADD_URL)
 
         self.assertIn('form', response_add.context)

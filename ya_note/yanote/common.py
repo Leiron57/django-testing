@@ -5,6 +5,7 @@ from notes.models import Note
 
 User = get_user_model()
 
+
 class BaseNotesTestSetup(TestCase):
     """Базовый класс для настройки тестовых данных заметок."""
 
@@ -74,7 +75,7 @@ class BaseNotesTestSetup(TestCase):
             author=cls.other_user
         )
 
-        cls.client_author = Client() 
+        cls.client_author = Client()
         cls.client_author.force_login(cls.author)
 
         cls.client_user1 = Client()
@@ -93,10 +94,28 @@ class BaseNotesTestSetup(TestCase):
         cls.USERS_SIGNUP_URL = reverse('users:signup')
         cls.USERS_LOGOUT_URL = reverse('users:logout')
 
-        cls.NOTES_DETAIL_URL_ANONYMOUS = reverse('notes:detail', args=(cls.note1.slug,))
-        cls.NOTES_EDIT_URL_ANONYMOUS = reverse('notes:edit', args=(cls.note1.slug,))
-        cls.NOTES_DELETE_URL_ANONYMOUS = reverse('notes:delete', args=(cls.note1.slug,))
+        cls.NOTES_DETAIL_URL_ANONYMOUS = reverse(
+            'notes:detail',
+            args=(cls.note1.slug,)
+        )
+        cls.NOTES_EDIT_URL_ANONYMOUS = reverse(
+            'notes:edit',
+            args=(cls.note1.slug,)
+        )
+        cls.NOTES_DELETE_URL_ANONYMOUS = reverse(
+            'notes:delete',
+            args=(cls.note1.slug,)
+        )
 
-        cls.NOTES_DETAIL = reverse('notes:detail', args=(cls.own_note.slug,))
-        cls.NOTES_EDIT = reverse('notes:edit', args=(cls.own_note.slug,))
-        cls.NOTES_DELETE = reverse('notes:delete', args=(cls.own_note.slug,))
+        cls.NOTES_DETAIL = reverse(
+            'notes:detail',
+            args=(cls.own_note.slug,)
+        )
+        cls.NOTES_EDIT = reverse(
+            'notes:edit',
+            args=(cls.own_note.slug,)
+        )
+        cls.NOTES_DELETE = reverse(
+            'notes:delete',
+            args=(cls.own_note.slug,)
+        )

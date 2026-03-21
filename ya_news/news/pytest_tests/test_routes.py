@@ -15,12 +15,14 @@ import pytest
     )
 )
 
+
 def test_pages_available_for_anonymous_user_get(client, name, args):
     url = reverse(name, args=args)
 
     response = client.get(url)
 
     assert response.status_code == HTTPStatus.OK
+
 
 @pytest.mark.django_db
 def test_news_detail_page_available_for_anonymous_user(client, news):
@@ -29,6 +31,7 @@ def test_news_detail_page_available_for_anonymous_user(client, news):
     response = client.get(url)
 
     assert response.status_code == HTTPStatus.OK
+
 
 @pytest.mark.django_db
 def test_logout_page_available_for_anonymous_user(client, news):
