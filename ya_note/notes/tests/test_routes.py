@@ -9,7 +9,6 @@ User = get_user_model()
 
 class TestRoutes(BaseNotesTestSetup):
     def test_authenticated_pages_available(self):
-        """Проверяет доступность страниц для авторизованных пользователей."""
         pages = [
             (self.NOTES_LIST_URL, 'Список заметок'),
             (self.NOTES_ADD_URL, 'Добавление заметки'),
@@ -25,7 +24,6 @@ class TestRoutes(BaseNotesTestSetup):
                 )
 
     def test_anonymous_redirects_to_login(self):
-        """Проверяет редирект анонимных пользователей на страницу логина."""
         protected_pages = [
             (self.NOTES_LIST_URL, 'Список заметок'),
             (self.NOTES_ADD_URL, 'Добавление заметки'),
@@ -43,7 +41,6 @@ class TestRoutes(BaseNotesTestSetup):
                 )
 
     def test_note_detail_access(self):
-        """Проверяет доступ к странице детализации заметки."""
         test_cases = [
             (
                 self.client_user1,
@@ -70,7 +67,6 @@ class TestRoutes(BaseNotesTestSetup):
                 )
 
     def test_note_edit_access(self):
-        """Проверяет доступ к странице редактирования заметки."""
         test_cases = [
             (
                 self.client_user1,
@@ -97,7 +93,6 @@ class TestRoutes(BaseNotesTestSetup):
                 )
 
     def test_note_delete_access(self):
-        """Проверяет доступ к странице удаления заметки."""
         test_cases = [
             (
                 self.client_user1,
@@ -124,7 +119,6 @@ class TestRoutes(BaseNotesTestSetup):
                 )
 
     def test_public_pages_available_for_anonymous(self):
-        """Проверяет доступность публичных страниц для анонимных пользователей."""
         public_pages = [
             (self.NOTES_HOME_URL, 'Главная страница'),
             (self.USERS_LOGIN_URL, 'Страница логина'),
@@ -140,7 +134,6 @@ class TestRoutes(BaseNotesTestSetup):
                 )
 
     def test_logout_page_redirects_after_post(self):
-        """Проверяет редирект после выхода из системы."""
         response = self.client_user1.post(self.USERS_LOGOUT_URL)
         login_url = self.USERS_LOGIN_URL
         self.assertEqual(response.status_code, HTTPStatus.FOUND)
