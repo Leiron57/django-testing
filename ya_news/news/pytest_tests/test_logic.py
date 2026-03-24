@@ -34,8 +34,8 @@ def test_user_can_create_comment(author_client, news, author):
     assert response.url == expected_redirect_url
 
     assert Comment.objects.count() == 1
-    comment = Comment.objects.get()
 
+    comment = Comment.objects.get()
     assert comment.text == data['text']
     assert comment.news == news
     assert comment.author == author

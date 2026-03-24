@@ -6,7 +6,7 @@ from django.utils import timezone
 import pytest
 
 from news.models import News, Comment
-
+from constant import NEWS_COUNT_FOR_TESTING
 
 @pytest.fixture
 def author(django_user_model):
@@ -70,7 +70,7 @@ def create_test_news(news_count):
             text='Просто текст',
             date=today - timedelta(days=index)
         )
-        for index in range(news_count)
+        for index in range(NEWS_COUNT_FOR_TESTING)
     ]
     News.objects.bulk_create(news_objects)
     return News.objects.all()

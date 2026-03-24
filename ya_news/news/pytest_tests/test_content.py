@@ -1,8 +1,8 @@
-from django.urls import reverse
-from constant import HOME_URL
-
 import pytest
 
+from django.urls import reverse
+
+from constant import HOME_URL, get_news_detail_url
 from news.forms import CommentForm
 
 
@@ -23,7 +23,7 @@ def test_news_order(client, create_test_news):
 
 @pytest.mark.django_db
 def test_comments_order(client, news, create_testcomments):
-    url = reverse('news:detail', args=(news.pk,))
+    url = get_news_detail_url(news.pk)
     response = client.get(url)
 
     news_obj = response.context['news']
@@ -35,7 +35,7 @@ def test_comments_order(client, news, create_testcomments):
 
 @pytest.mark.django_db
 def test_anonymous_client_has_no_form(client, news):
-    url = reverse('news:detail', args=(news.pk,))
+    url = get_news_detail_url(news.pk)
     response = client.get(url)
 
     assert 'form' not in response.context
@@ -43,7 +43,7 @@ def test_anonymous_client_has_no_form(client, news):
 
 @pytest.mark.django_db
 def test_authorized_client_has_form(author_client, news):
-    url = reverse('news:detail', args=(news.pk,))
+    url = get_news_detail_url(news.pk)
     response = author_client.get(url)
 
     assert 'form' in response.context

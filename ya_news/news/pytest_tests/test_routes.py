@@ -42,21 +42,19 @@ def test_logout_page_available_for_anonymous_user(client, news):
 
 @pytest.mark.django_db
 @pytest.mark.parametrize(
-    'client_fixture, status',
-    (
-        ('author_client', HTTPStatus.OK),
-        ('not_author_client', HTTPStatus.NOT_FOUND),
-    )
+    'client_fixture, url_name, expected_status',
+    [
+        ('author_client', 'news:edit', HTTPStatus.OK),
+        ('author_client', 'news:delete', HTTPStatus.OK),
+        ('not_author_client', 'news:edit', HTTPStatus.NOT_FOUND),
+        ('not_author_client', 'news:delete', HTTPStatus.NOT_FOUND),
+    ]
 )
-def test_comment_edit_delete_available_only_for_author(
-    request, client_fixture, status, comment
-):
+def test_comment_edit_delete_permissions(request, client_fixture, url_name, expected_status, comment):
     client = request.getfixturevalue(client_fixture)
-
-    for name in ('news:edit', 'news:delete'):
-        url = reverse(name, args=(comment.pk,))
-        response = client.get(url)
-        assert response.status_code == status
+    url = reverse(url_name, args=(comment.pk,))
+    response = client.get(url)
+    assert response.status_code == expected_status
 
 
 @pytest.mark.django_db
