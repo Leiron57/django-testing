@@ -50,7 +50,13 @@ def test_logout_page_available_for_anonymous_user(client, news):
         ('not_author_client', 'news:delete', HTTPStatus.NOT_FOUND),
     ]
 )
-def test_comment_edit_delete_permissions(request, client_fixture, url_name, expected_status, comment):
+def test_comment_edit_delete_permissions(
+    request,
+    client_fixture,
+    url_name,
+    expected_status,
+    comment
+):
     client = request.getfixturevalue(client_fixture)
     url = reverse(url_name, args=(comment.pk,))
     response = client.get(url)

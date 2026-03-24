@@ -1,6 +1,5 @@
 import pytest
 
-from django.urls import reverse
 
 from constant import HOME_URL, get_news_detail_url
 from news.forms import CommentForm

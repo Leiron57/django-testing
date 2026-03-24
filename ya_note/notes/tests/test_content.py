@@ -1,6 +1,7 @@
 from yanote.common import BaseNotesTestSetup
 from notes.forms import NoteForm
 
+
 class TestNotesContent(BaseNotesTestSetup):
 
     def test_notes_list_contains_object_list_key(self):

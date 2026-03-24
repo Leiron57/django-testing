@@ -1,11 +1,11 @@
 from http import HTTPStatus
 from django.contrib.auth import get_user_model
 from django.urls import reverse
-from django.test import TestCase
 
 from yanote.common import BaseNotesTestSetup
 
 User = get_user_model()
+
 
 class TestRoutes(BaseNotesTestSetup):
     def test_authenticated_pages_available(self):
@@ -21,8 +21,7 @@ class TestRoutes(BaseNotesTestSetup):
                 response = self.client_user1.get(url)
                 self.assertEqual(
                     response.status_code,
-                    HTTPStatus.OK,
-                    f'Страница "{description}" должна быть доступна авторизованному пользователю'
+                    HTTPStatus.OK
                 )
 
     def test_anonymous_redirects_to_login(self):
@@ -40,8 +39,7 @@ class TestRoutes(BaseNotesTestSetup):
                 expected_redirect = f'{login_url}?next={url}'
                 self.assertRedirects(
                     response,
-                    expected_redirect,
-                    msg_prefix=f'Анонимный пользователь должен быть перенаправлен на логин для "{description}"'
+                    expected_redirect
                 )
 
     def test_note_detail_access(self):
@@ -130,8 +128,7 @@ class TestRoutes(BaseNotesTestSetup):
                 response = self.anonymous_client.get(url)
                 self.assertEqual(
                     response.status_code,
-                    HTTPStatus.OK,
-                    f'Страница "{description}" должна быть доступна анонимному пользователю'
+                    HTTPStatus.OK
                 )
 
     def test_logout_page_redirects_after_post(self):

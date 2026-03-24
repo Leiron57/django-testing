@@ -8,6 +8,7 @@ import pytest
 from news.models import News, Comment
 from constant import NEWS_COUNT_FOR_TESTING
 
+
 @pytest.fixture
 def author(django_user_model):
     return django_user_model.objects.create(username='author')
