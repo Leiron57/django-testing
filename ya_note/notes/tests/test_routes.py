@@ -90,7 +90,11 @@ class TestRoutes(BaseNotesTestSetup):
             url = reverse('notes:edit', args=(slug,))
             with self.subTest(description=description, slug=slug):
                 response = client.get(url)
-                self.assertEqual(response.status_code, expected_status, description)
+                self.assertEqual(
+                    response.status_code,
+                    expected_status,
+                    description
+                )
 
     def test_note_delete_access(self):
         """Проверяет доступ к странице удаления заметки."""
@@ -113,7 +117,11 @@ class TestRoutes(BaseNotesTestSetup):
             url = reverse('notes:delete', args=(slug,))
             with self.subTest(description=description, slug=slug):
                 response = client.get(url)
-                self.assertEqual(response.status_code, expected_status, description)
+                self.assertEqual(
+                    response.status_code,
+                    expected_status,
+                    description
+                )
 
     def test_public_pages_available_for_anonymous(self):
         """Проверяет доступность публичных страниц для анонимных пользователей."""
