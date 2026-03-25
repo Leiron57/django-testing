@@ -6,6 +6,7 @@ from .common import BaseNotesTestSetup
 
 User = get_user_model()
 
+
 class TestRoutes(BaseNotesTestSetup):
     def test_authenticated_pages_available(self):
         pages = [
@@ -19,7 +20,7 @@ class TestRoutes(BaseNotesTestSetup):
                 response = self.client_user1.get(url)
                 self.assertEqual(
                     response.status_code,
-            HTTPStatus.OK
+                HTTPStatus.OK
                 )
 
     def test_anonymous_redirects_to_login(self):
@@ -144,7 +145,7 @@ class TestRoutes(BaseNotesTestSetup):
                 response = self.anonymous_client.get(url)
                 self.assertEqual(
                     response.status_code,
-            HTTPStatus.OK
+                HTTPStatus.OK
                 )
 
     def test_logout_page_redirects_after_post(self):
