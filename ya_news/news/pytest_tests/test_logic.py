@@ -2,7 +2,6 @@
 from http import HTTPStatus
 
 from django.test import Client
-from django.urls import reverse
 
 import pytest
 from pytest_django.asserts import assertFormError
@@ -28,6 +27,7 @@ def test_anonymous_user_cant_create_comment(client, news):
     client.post(url, data=data)
     assert Comment.objects.count() == 0
 
+
 @pytest.mark.django_db
 def test_user_can_create_comment(author_client, news, author):
     # Arrange (подготовка данных)
@@ -48,6 +48,7 @@ def test_user_can_create_comment(author_client, news, author):
     assert comment.news == news
     assert comment.author == author
 
+
 @pytest.mark.parametrize('bad_words', BAD_WORDS)
 def test_user_cant_use_bad_words(
     author_client: Client,
@@ -65,6 +66,7 @@ def test_user_cant_use_bad_words(
     )
     assert Comment.objects.count() == 0
 
+
 @pytest.mark.django_db
 def test_author_can_edit_comment(author_client, comment):
     edit_url = get_comment_edit_url(comment.pk)
@@ -76,6 +78,7 @@ def test_author_can_edit_comment(author_client, comment):
 
     comment.refresh_from_db()
     assert comment.text == data['text']
+
 
 @pytest.mark.django_db
 def test_user_cant_edit_comment_of_another_user(
@@ -91,6 +94,7 @@ def test_user_cant_edit_comment_of_another_user(
     comment.refresh_from_db()
     assert comment.text == 'Текст комментария'
 
+
 @pytest.mark.django_db
 def test_author_can_delete_comment(author_client, comment, news):
     delete_url = get_comment_delete_url(comment.pk)
@@ -101,6 +105,7 @@ def test_author_can_delete_comment(author_client, comment, news):
     assert response.status_code == HTTPStatus.FOUND
     assert response.url == url_to_comments
     assert Comment.objects.count() == 0
+
 
 @pytest.mark.django_db
 def test_user_cant_delete_comment_of_another_user(
