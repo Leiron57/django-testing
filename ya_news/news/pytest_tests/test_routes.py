@@ -64,13 +64,16 @@ def test_comment_edit_delete_permissions(
 
 
 @pytest.mark.django_db
-def test_redirect_for_anonymous_user(client, comment):
+@pytest.mark.parametrize(
+    'url_name',
+    ['news:edit', 'news:delete']
+)
+def test_redirect_anonymous_user_to_login(client, comment, url_name):
     login_url = reverse('users:login')
+    url = reverse(url_name, args=(comment.pk,))
+    redirect_url = f'{login_url}?next={url}'
 
-    for name in ('news:edit', 'news:delete'):
-        url = reverse(name, args=(comment.pk,))
-        redirect_url = f'{login_url}?next={url}'
+    response = client.get(url)
 
-        response = client.get(url)
-        assert response.status_code == HTTPStatus.FOUND
-        assert response.url == redirect_url
+    assert response.status_code == HTTPStatus.FOUND
+    assert response.url == redirect_url

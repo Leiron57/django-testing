@@ -6,7 +6,7 @@ from django.utils import timezone
 import pytest
 
 from news.models import News, Comment
-from constant import NEWS_COUNT_FOR_TESTING
+from ya_news.news.pytest_tests.constants import NEWS_COUNT_FOR_TESTING
 
 
 @pytest.fixture

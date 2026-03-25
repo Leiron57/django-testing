@@ -2,37 +2,36 @@ from http import HTTPStatus
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 
-from yanote.common import BaseNotesTestSetup
+from .common import BaseNotesTestSetup
 
 User = get_user_model()
-
 
 class TestRoutes(BaseNotesTestSetup):
     def test_authenticated_pages_available(self):
         pages = [
-            (self.NOTES_LIST_URL, 'Список заметок'),
-            (self.NOTES_ADD_URL, 'Добавление заметки'),
-            (self.NOTES_SUCCESS_URL, 'Страница успеха'),
+            self.NOTES_LIST_URL,
+            self.NOTES_ADD_URL,
+            self.NOTES_SUCCESS_URL,
         ]
 
-        for url, description in pages:
-            with self.subTest(page=description):
+        for url in pages:
+            with self.subTest(url=url):
                 response = self.client_user1.get(url)
                 self.assertEqual(
                     response.status_code,
-                    HTTPStatus.OK
+            HTTPStatus.OK
                 )
 
     def test_anonymous_redirects_to_login(self):
         protected_pages = [
-            (self.NOTES_LIST_URL, 'Список заметок'),
-            (self.NOTES_ADD_URL, 'Добавление заметки'),
+            self.NOTES_LIST_URL,
+            self.NOTES_ADD_URL,
         ]
 
         login_url = self.USERS_LOGIN_URL
 
-        for url, description in protected_pages:
-            with self.subTest(page=description):
+        for url in protected_pages:
+            with self.subTest(url=url, login_url=login_url):
                 response = self.anonymous_client.get(url)
                 expected_redirect = f'{login_url}?next={url}'
                 self.assertRedirects(
@@ -58,7 +57,12 @@ class TestRoutes(BaseNotesTestSetup):
 
         for client, slug, expected_status, description in test_cases:
             url = reverse('notes:detail', args=(slug,))
-            with self.subTest(description=description, slug=slug):
+            with self.subTest(
+                description=description,
+                slug=slug,
+                expected_status=expected_status.value,
+                url=url
+            ):
                 response = client.get(url)
                 self.assertEqual(
                     response.status_code,
@@ -84,7 +88,12 @@ class TestRoutes(BaseNotesTestSetup):
 
         for client, slug, expected_status, description in test_cases:
             url = reverse('notes:edit', args=(slug,))
-            with self.subTest(description=description, slug=slug):
+            with self.subTest(
+                description=description,
+                slug=slug,
+                expected_status=expected_status.value,
+                url=url
+            ):
                 response = client.get(url)
                 self.assertEqual(
                     response.status_code,
@@ -110,7 +119,12 @@ class TestRoutes(BaseNotesTestSetup):
 
         for client, slug, expected_status, description in test_cases:
             url = reverse('notes:delete', args=(slug,))
-            with self.subTest(description=description, slug=slug):
+            with self.subTest(
+                description=description,
+                slug=slug,
+                expected_status=expected_status.value,
+                url=url
+            ):
                 response = client.get(url)
                 self.assertEqual(
                     response.status_code,
@@ -120,21 +134,22 @@ class TestRoutes(BaseNotesTestSetup):
 
     def test_public_pages_available_for_anonymous(self):
         public_pages = [
-            (self.NOTES_HOME_URL, 'Главная страница'),
-            (self.USERS_LOGIN_URL, 'Страница логина'),
-            (self.USERS_SIGNUP_URL, 'Страница регистрации'),
+            self.NOTES_HOME_URL,
+            self.USERS_LOGIN_URL,
+            self.USERS_SIGNUP_URL,
         ]
 
-        for url, description in public_pages:
-            with self.subTest(page=description):
+        for url in public_pages:
+            with self.subTest(url=url):
                 response = self.anonymous_client.get(url)
                 self.assertEqual(
                     response.status_code,
-                    HTTPStatus.OK
+            HTTPStatus.OK
                 )
 
     def test_logout_page_redirects_after_post(self):
-        response = self.client_user1.post(self.USERS_LOGOUT_URL)
-        login_url = self.USERS_LOGIN_URL
-        self.assertEqual(response.status_code, HTTPStatus.FOUND)
-        self.assertIn(login_url, response.url)
+        with self.subTest():
+            response = self.client_user1.post(self.USERS_LOGOUT_URL)
+            login_url = self.USERS_LOGIN_URL
+            self.assertEqual(response.status_code, HTTPStatus.FOUND)
+            self.assertIn(login_url, response.url)

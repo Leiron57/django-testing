@@ -1,7 +1,6 @@
 import pytest
 
-
-from constant import HOME_URL, get_news_detail_url
+from .constants import HOME_URL, get_news_detail_url
 from news.forms import CommentForm
 
 

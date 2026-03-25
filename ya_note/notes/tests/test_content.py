@@ -1,4 +1,4 @@
-from yanote.common import BaseNotesTestSetup
+from .common import BaseNotesTestSetup
 from notes.forms import NoteForm
 
 
