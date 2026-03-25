@@ -1,8 +1,13 @@
 from django import forms
 from .models import Comment
 import re
-from news.pytest_tests.constants import WARNING, BAD_WORDS
 
+WARNING = 'Не ругайтесь!'
+
+BAD_WORDS = (
+    'редиска',
+    'негодяй',
+)
 
 class CommentForm(forms.ModelForm):
     class Meta:
