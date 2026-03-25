@@ -1,7 +1,7 @@
 from django import forms
 from .models import Comment
 import re
-from ya_news.news.pytest_tests.constants import WARNING, BAD_WORDS
+from news.pytest_tests.constants import WARNING, BAD_WORDS
 
 
 class CommentForm(forms.ModelForm):
