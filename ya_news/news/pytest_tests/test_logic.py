@@ -17,10 +17,10 @@ def test_anonymous_user_cant_create_comment(client, comment_url):
 
 @pytest.mark.django_db
 def test_user_can_create_comment(
-    author_client, 
-    news, 
-    author, 
-    comment_url, 
+    author_client,
+    news,
+    author,
+    comment_url,
     detail_with_comments_url
 ):
     data = {'text': 'Текст комментария'}
@@ -86,8 +86,8 @@ def test_user_cant_edit_comment_of_another_user(
 
 @pytest.mark.django_db
 def test_author_can_delete_comment(
-    author_client, 
-    delete_url, 
+    author_client,
+    delete_url,
     detail_with_comments_url
 ):
     response = author_client.post(delete_url)
