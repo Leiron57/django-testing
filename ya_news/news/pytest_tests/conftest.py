@@ -1,12 +1,21 @@
+from datetime import timedelta
 from django.test import Client
 from django.urls import reverse
-from datetime import timedelta
 from django.utils import timezone
-
 import pytest
 
 from news.models import News, Comment
-from .constants import NEWS_COUNT_FOR_TESTING
+from .constants import (
+    NEWS_COUNT_FOR_TESTING, 
+    NEWS_DETAIL_URL, 
+    NEWS_COMMENT_URL, 
+    NEWS_EDIT_URL, 
+    NEWS_DELETE_URL,
+    USER_LOGIN,
+    USER_LOGOUT,
+    USER_SIGNUP,
+    HOME_URL,
+)
 
 
 @pytest.fixture
@@ -51,18 +60,59 @@ def comment(author, news):
 
 
 @pytest.fixture
+def home_url():
+    return reverse(HOME_URL)
+
+@pytest.fixture
 def detail_url(news):
-    return reverse('news:detail', args=(news.pk,))
+    """URL страницы новости."""
+    return reverse(NEWS_DETAIL_URL, args=(news.pk,))
 
 
 @pytest.fixture
-def news_count(settings):
-    """Возвращает количество новостей для тестирования (на 1 больше лимита)."""
-    return settings.NEWS_COUNT_ON_HOME_PAGE + 1
+def comment_url(news):
+    """URL для добавления комментария к новости."""
+    return reverse(NEWS_COMMENT_URL, args=(news.pk,))
 
 
 @pytest.fixture
-def create_test_news(news_count):
+def edit_url(comment):
+    """URL для редактирования комментария."""
+    return reverse(NEWS_EDIT_URL, args=(comment.pk,))
+
+
+@pytest.fixture
+def delete_url(comment):
+    """URL для удаления комментария."""
+    return reverse(NEWS_DELETE_URL, args=(comment.pk,))
+
+
+@pytest.fixture
+def detail_with_comments_url(news):
+    """URL страницы новости с якорем на комментарии."""
+    return f'{reverse(NEWS_DETAIL_URL, args=(news.pk,))}#comments'
+
+
+@pytest.fixture
+def login_url():
+    """URL страницы логина."""
+    return reverse(USER_LOGIN)
+
+
+@pytest.fixture
+def logout_url():
+    """URL страницы логаута."""
+    return reverse(USER_LOGOUT)
+
+
+@pytest.fixture
+def signup_url():
+    """URL страницы регистрации."""
+    return reverse(USER_SIGNUP)
+
+
+@pytest.fixture
+def create_test_news():
     """Создаёт набор тестовых новостей с разными датами."""
     today = timezone.now()
     news_objects = [
@@ -81,13 +131,14 @@ def create_test_news(news_count):
 def create_testcomments(news, author):
     """Создаёт набор тестовых комментариев с разными датами создания."""
     now = timezone.now()
-    comments = []
-    for index in range(10):
-        comment = Comment.objects.create(
+    comment_objects = [
+        Comment(
             news=news,
             author=author,
             text=f'Текст {index}',
             created=now + timedelta(days=index)
         )
-        comments.append(comment)
-    return comments
+        for index in range(10)
+    ]
+    Comment.objects.bulk_create(comment_objects)
+    return Comment.objects.filter(news=news)
