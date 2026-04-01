@@ -6,10 +6,10 @@ import pytest
 
 from news.models import News, Comment
 from .constants import (
-    NEWS_COUNT_FOR_TESTING, 
-    NEWS_DETAIL_URL, 
-    NEWS_COMMENT_URL, 
-    NEWS_EDIT_URL, 
+    NEWS_COUNT_FOR_TESTING,
+    NEWS_DETAIL_URL,
+    NEWS_COMMENT_URL,
+    NEWS_EDIT_URL,
     NEWS_DELETE_URL,
     USER_LOGIN,
     USER_LOGOUT,
@@ -62,6 +62,7 @@ def comment(author, news):
 @pytest.fixture
 def home_url():
     return reverse(HOME_URL)
+
 
 @pytest.fixture
 def detail_url(news):

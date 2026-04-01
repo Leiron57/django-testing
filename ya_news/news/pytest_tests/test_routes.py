@@ -58,7 +58,13 @@ def test_comment_edit_delete_permissions(
     'url_fixture',
     ['edit_url', 'delete_url']
 )
-def test_redirect_anonymous_user_to_login(client, comment, request, url_fixture, login_url):
+def test_redirect_anonymous_user_to_login(
+    client, 
+    comment, 
+    request, 
+    url_fixture, 
+    login_url
+):
     url = request.getfixturevalue(url_fixture)
     redirect_url = f'{login_url}?next={url}'
 
