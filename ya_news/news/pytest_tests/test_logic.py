@@ -24,7 +24,6 @@ def test_anonymous_user_cant_create_comment(client, news):
     assert Comment.objects.count() == 0
 
 
-
 @pytest.mark.django_db
 def test_user_can_create_comment(author_client, news, author):
     comment_text = 'Текст комментария'
