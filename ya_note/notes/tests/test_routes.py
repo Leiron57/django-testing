@@ -40,86 +40,33 @@ class TestRoutes(BaseNotesTestSetup):
                     expected_redirect
                 )
 
-    def test_note_detail_access(self):
-        test_cases = [
-            (
-                self.client_user1,
-                self.note1.slug,
-                HTTPStatus.OK,
-            ),
-            (
-                self.client_user1,
-                self.note2.slug,
-                HTTPStatus.NOT_FOUND,
-            ),
+    def _get_note_access_test_cases(self):
+        return [
+            (self.client_user1, self.note1.slug, HTTPStatus.OK),
+            (self.client_user1, self.note2.slug, HTTPStatus.NOT_FOUND)
         ]
 
+    def _test_note_access(self, view_name):
+        test_cases = self._get_note_access_test_cases()
         for client, slug, expected_status in test_cases:
-            url = reverse('notes:detail', args=(slug,))
+            url = reverse(view_name, args=(slug,))
             with self.subTest(
+                view=view_name,
                 slug=slug,
                 expected_status=expected_status.value,
                 url=url
             ):
                 response = client.get(url)
-                self.assertEqual(
-                    response.status_code,
-                    expected_status,
-                )
+                self.assertEqual(response.status_code, expected_status)
+
+    def test_note_detail_access(self):
+        self._test_note_access('notes:detail')
 
     def test_note_edit_access(self):
-        test_cases = [
-            (
-                self.client_user1,
-                self.note1.slug,
-                HTTPStatus.OK,
-            ),
-            (
-                self.client_user1,
-                self.note2.slug,
-                HTTPStatus.NOT_FOUND,
-            ),
-        ]
-
-        for client, slug, expected_status in test_cases:
-            url = reverse('notes:edit', args=(slug,))
-            with self.subTest(
-                slug=slug,
-                expected_status=expected_status.value,
-                url=url
-            ):
-                response = client.get(url)
-                self.assertEqual(
-                    response.status_code,
-                    expected_status,
-                )
+        self._test_note_access('notes:edit')
 
     def test_note_delete_access(self):
-        test_cases = [
-            (
-                self.client_user1,
-                self.note1.slug,
-                HTTPStatus.OK,
-            ),
-            (
-                self.client_user1,
-                self.note2.slug,
-                HTTPStatus.NOT_FOUND,
-            ),
-        ]
-
-        for client, slug, expected_status in test_cases:
-            url = reverse('notes:delete', args=(slug,))
-            with self.subTest(
-                slug=slug,
-                expected_status=expected_status.value,
-                url=url
-            ):
-                response = client.get(url)
-                self.assertEqual(
-                    response.status_code,
-                    expected_status,
-                )
+        self._test_note_access('notes:delete')
 
     def test_public_pages_available_for_anonymous(self):
         test_cases = [

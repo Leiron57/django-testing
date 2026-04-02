@@ -1,21 +1,12 @@
 from datetime import timedelta
-from django.test import Client
-from django.urls import reverse
 from django.utils import timezone
+
 import pytest
 
+from django.test import Client
+
 from news.models import News, Comment
-from .constants import (
-    NEWS_COUNT_FOR_TESTING,
-    NEWS_DETAIL_URL,
-    NEWS_COMMENT_URL,
-    NEWS_EDIT_URL,
-    NEWS_DELETE_URL,
-    USER_LOGIN,
-    USER_LOGOUT,
-    USER_SIGNUP,
-    HOME_URL,
-)
+from .constants import NEWS_COUNT_FOR_TESTING
 
 
 @pytest.fixture
@@ -57,59 +48,6 @@ def comment(author, news):
         author=author,
         text='Текст комментария'
     )
-
-
-@pytest.fixture
-def home_url():
-    return reverse(HOME_URL)
-
-
-@pytest.fixture
-def detail_url(news):
-    """URL страницы новости."""
-    return reverse(NEWS_DETAIL_URL, args=(news.pk,))
-
-
-@pytest.fixture
-def comment_url(news):
-    """URL для добавления комментария к новости."""
-    return reverse(NEWS_COMMENT_URL, args=(news.pk,))
-
-
-@pytest.fixture
-def edit_url(comment):
-    """URL для редактирования комментария."""
-    return reverse(NEWS_EDIT_URL, args=(comment.pk,))
-
-
-@pytest.fixture
-def delete_url(comment):
-    """URL для удаления комментария."""
-    return reverse(NEWS_DELETE_URL, args=(comment.pk,))
-
-
-@pytest.fixture
-def detail_with_comments_url(news):
-    """URL страницы новости с якорем на комментарии."""
-    return f'{reverse(NEWS_DETAIL_URL, args=(news.pk,))}#comments'
-
-
-@pytest.fixture
-def login_url():
-    """URL страницы логина."""
-    return reverse(USER_LOGIN)
-
-
-@pytest.fixture
-def logout_url():
-    """URL страницы логаута."""
-    return reverse(USER_LOGOUT)
-
-
-@pytest.fixture
-def signup_url():
-    """URL страницы регистрации."""
-    return reverse(USER_SIGNUP)
 
 
 @pytest.fixture
