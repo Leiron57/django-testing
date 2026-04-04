@@ -9,12 +9,13 @@ from django.urls import reverse
 
 from news.models import News, Comment
 from .constants import (
-    NEWS_COUNT_FOR_TESTING, 
-    NEWS_DETAIL_URL, 
-    NEWS_COMMENT_URL, 
-    NEWS_EDIT_URL, 
+    NEWS_COUNT_FOR_TESTING,
+    NEWS_DETAIL_URL,
+    NEWS_COMMENT_URL,
+    NEWS_EDIT_URL,
     NEWS_DELETE_URL
 )
+
 
 @pytest.fixture
 def author(django_user_model):
@@ -91,25 +92,25 @@ def create_testcomments(news, author):
 
 
 @pytest.fixture
-def detail_url(news): 
-    return reverse(NEWS_DETAIL_URL, args=(news.pk,)) 
+def detail_url(news):
+    return reverse(NEWS_DETAIL_URL, args=(news.pk,))
 
 
 @pytest.fixture
-def comment_url(news): 
-    return reverse(NEWS_COMMENT_URL, args=(news.pk,)) 
+def comment_url(news):
+    return reverse(NEWS_COMMENT_URL, args=(news.pk,))
 
 
 @pytest.fixture
-def edit_url(comment): 
-    return reverse(NEWS_EDIT_URL, args=(comment.pk,)) 
+def edit_url(comment):
+    return reverse(NEWS_EDIT_URL, args=(comment.pk,))
 
 
 @pytest.fixture
-def delete_url(comment): 
-    return reverse(NEWS_DELETE_URL, args=(comment.pk,)) 
+def delete_url(comment):
+    return reverse(NEWS_DELETE_URL, args=(comment.pk,))
 
 
 @pytest.fixture
-def detail_with_comments_url(news): 
+def detail_with_comments_url(news):
     return f'{reverse(NEWS_DETAIL_URL, args=(news.pk,))}#comments'

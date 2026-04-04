@@ -22,4 +22,3 @@ HOME_URL = reverse('news:home')
 USER_LOGIN_URL = reverse('users:login')
 USER_SIGNUP_URL = reverse('users:signup')
 USER_LOGOUT_URL = reverse('users:logout')
-

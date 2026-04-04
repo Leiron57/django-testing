@@ -1,6 +1,6 @@
 from http import HTTPStatus
 import pytest
-from django.urls import reverse
+
 from .constants import (
     HOME_URL,
     USER_LOGIN_URL,
@@ -20,7 +20,11 @@ def test_pages_available_for_anonymous_user_get(client, url_name):
 
 
 @pytest.mark.django_db
-def test_news_detail_page_available_for_anonymous_user(client, news, detail_url):
+def test_news_detail_page_available_for_anonymous_user(
+    client,
+    news,
+    detail_url
+):
     response = client.get(detail_url)
     assert response.status_code == HTTPStatus.OK
 
@@ -31,27 +35,27 @@ def test_logout_page_available_for_anonymous_user(client):
     assert response.status_code == HTTPStatus.FOUND
 
 
-@pytest.mark.django_db 
-@pytest.mark.parametrize( 
-    'client_fixture, url_fixture, expected_status, news_pk', 
-    [ 
-        ('author_client', 'edit_url', HTTPStatus.OK, 1), 
-        ('author_client', 'delete_url', HTTPStatus.OK, 1), 
-        ('not_author_client', 'edit_url', HTTPStatus.NOT_FOUND, 1), 
-        ('not_author_client', 'delete_url', HTTPStatus.NOT_FOUND, 1), 
-    ] 
-) 
-def test_comment_edit_delete_permissions( 
-    request, 
-    client_fixture, 
-    url_fixture, 
-    expected_status, 
-    news_pk, 
-    comment 
-): 
-    client = request.getfixturevalue(client_fixture) 
-    url = request.getfixturevalue(url_fixture) 
-    response = client.get(url) 
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    'client_fixture, url_fixture, expected_status, news_pk',
+    [
+        ('author_client', 'edit_url', HTTPStatus.OK, 1),
+        ('author_client', 'delete_url', HTTPStatus.OK, 1),
+        ('not_author_client', 'edit_url', HTTPStatus.NOT_FOUND, 1),
+        ('not_author_client', 'delete_url', HTTPStatus.NOT_FOUND, 1),
+    ]
+)
+def test_comment_edit_delete_permissions(
+    request,
+    client_fixture,
+    url_fixture,
+    expected_status,
+    news_pk,
+    comment
+):
+    client = request.getfixturevalue(client_fixture)
+    url = request.getfixturevalue(url_fixture)
+    response = client.get(url)
     assert response.status_code == expected_status
 
 
